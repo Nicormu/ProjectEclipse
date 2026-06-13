@@ -11,5 +11,6 @@ public class RecipeData : ScriptableObject
 
     [Header("Result")]
     public ItemData result;
+    [Min(1)]
     public int resultAmount = 1;
 }

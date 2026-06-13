@@ -16,7 +16,6 @@ public class InventoryManager : MonoBehaviour
         Instance = this;
     }
 
-    // Using a dictionary to store items and their counts.
     private readonly Dictionary<ItemData, int> _inventory = new();
 
     public bool HasItem(ItemData item, int amount)
@@ -26,7 +25,6 @@ public class InventoryManager : MonoBehaviour
             return false;
         }
 
-        // Check if the inventory has the item and if the quantity is sufficient.
         return _inventory.TryGetValue(item, out int currentAmount) && currentAmount >= amount;
     }
 
@@ -39,8 +37,6 @@ public class InventoryManager : MonoBehaviour
         }
 
         _inventory[item] -= amount;
-
-        // If the item count drops to 0 or below, remove it from the dictionary.
         if (_inventory[item] <= 0)
         {
             _inventory.Remove(item);
@@ -51,7 +47,6 @@ public class InventoryManager : MonoBehaviour
     {
         if (item == null || amount <= 0) return;
 
-        // If we already have the item, add to the count. Otherwise, add the item to the inventory.
         if (_inventory.ContainsKey(item))
         {
             _inventory[item] += amount;
@@ -60,5 +55,29 @@ public class InventoryManager : MonoBehaviour
         {
             _inventory.Add(item, amount);
         }
+
+        //Debug.Log($"Added {amount}x {item.itemName}");
+        //PrintInventory();
+    }   
+
+    public void PrintInventory()
+    {
+        Debug.Log("=== Inventory ===");
+
+        if (_inventory.Count == 0)
+        {
+            Debug.Log("Inventory is empty.");
+            return;
+        }
+
+        foreach (var item in _inventory)
+        {
+            Debug.Log($"{item.Key.itemName}: {item.Value}");
+        }
+    }
+
+    public IReadOnlyDictionary<ItemData, int> GetInventory()
+    {
+        return _inventory;
     }
 }

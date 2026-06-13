@@ -9,6 +9,7 @@ public class CraftingStation : MonoBehaviour, IInteractable
 
     [Header("Recipes")]
     [SerializeField] private RecipeData[] availableRecipes;
+    [SerializeField] private RecipeData testRecipe;
 
     public RecipeData[] AvailableRecipes => availableRecipes;
 
@@ -167,5 +168,10 @@ public class CraftingStation : MonoBehaviour, IInteractable
         }
 
         isAnimating = false;
+    }
+
+    public void CraftTestRecipe()
+    {
+        Craft(testRecipe);
     }
 }

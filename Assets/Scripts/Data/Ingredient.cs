@@ -4,5 +4,6 @@ using UnityEngine;
 public class Ingredient
 {
     public ItemData item;
-    public int amount;
+    [Min(1)]
+    public int amount = 1;
 }

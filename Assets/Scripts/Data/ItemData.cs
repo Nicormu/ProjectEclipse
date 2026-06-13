@@ -6,8 +6,15 @@ using UnityEngine;
 )]
 public class ItemData : ScriptableObject
 {
+    [Header("Basic Info")]
     public string itemName;
     public Sprite icon;
+
     [TextArea]
     public string description;
+
+    [Header("Inventory")]
+    public bool stackable = true;
+    [Min(1)]
+    public int maxStack = 99;
 }
