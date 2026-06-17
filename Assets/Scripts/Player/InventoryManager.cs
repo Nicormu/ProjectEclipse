@@ -12,34 +12,47 @@ public class InventoryManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
     }
 
-    private readonly Dictionary<ItemData, int> _inventory = new();
+    private readonly List<InventorySlot> _inventory = new(); 
 
     public bool HasItem(ItemData item, int amount)
     {
-        if (item == null || amount <= 0)
+        if (item == null || amount <= 0) return false;
+
+        int totalOwned = 0;
+        foreach (var slot in _inventory)
         {
-            return false;
+            if (slot.Item == item) totalOwned += slot.Amount;
         }
 
-        return _inventory.TryGetValue(item, out int currentAmount) && currentAmount >= amount;
+        return totalOwned >= amount;
     }
 
     public void RemoveItem(ItemData item, int amount)
     {
         if (!HasItem(item, amount))
         {
-            Debug.LogWarning($"Tried to remove {amount} of {item.itemName}, but not enough in inventory.");
+            Debug.LogWarning($"Not enough {item.itemName} to remove.");
             return;
         }
 
-        _inventory[item] -= amount;
-        if (_inventory[item] <= 0)
+        for (int i = _inventory.Count - 1; i >= 0; i--)
         {
-            _inventory.Remove(item);
+            if (_inventory[i].Item == item)
+            {
+                if (_inventory[i].Amount >= amount)
+                {
+                    _inventory[i].Amount -= amount;
+                    break; 
+                }
+                else
+                {
+                    amount -= _inventory[i].Amount;
+                    _inventory[i].Amount = 0; // Keep the empty entry in the journal
+                }
+            }
         }
     }
 
@@ -47,36 +60,36 @@ public class InventoryManager : MonoBehaviour
     {
         if (item == null || amount <= 0) return;
 
-        if (_inventory.ContainsKey(item))
+        if (item.stackable)
         {
-            _inventory[item] += amount;
-        }
-        else
-        {
-            _inventory.Add(item, amount);
+            foreach (var slot in _inventory)
+            {
+                if (slot.Item == item && slot.Amount < item.maxStack)
+                {
+                    int spaceLeft = item.maxStack - slot.Amount;
+                    if (amount <= spaceLeft)
+                    {
+                        slot.Amount += amount;
+                        return; 
+                    }
+                    else
+                    {
+                        slot.Amount += spaceLeft;
+                        amount -= spaceLeft; 
+                    }
+                }
+            }
         }
 
-        //Debug.Log($"Added {amount}x {item.itemName}");
-        //PrintInventory();
+        while (amount > 0)
+        {
+            int amountToAdd = item.stackable ? Mathf.Min(amount, item.maxStack) : 1;
+            _inventory.Add(new InventorySlot(item, amountToAdd));
+            amount -= amountToAdd;
+        }
     }   
 
-    public void PrintInventory()
-    {
-        Debug.Log("=== Inventory ===");
-
-        if (_inventory.Count == 0)
-        {
-            Debug.Log("Inventory is empty.");
-            return;
-        }
-
-        foreach (var item in _inventory)
-        {
-            Debug.Log($"{item.Key.itemName}: {item.Value}");
-        }
-    }
-
-    public IReadOnlyDictionary<ItemData, int> GetInventory()
+    public IReadOnlyList<InventorySlot> GetInventory()
     {
         return _inventory;
     }

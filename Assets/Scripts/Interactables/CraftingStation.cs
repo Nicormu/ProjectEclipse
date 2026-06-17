@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CraftingStation : MonoBehaviour, IInteractable
 {
+    public static bool IsCraftingOpen { get; private set; }
+
     [Header("UI")]
     [SerializeField] private CanvasGroup craftingCanvasGroup;
     [SerializeField] private float fadeDuration = 0.25f;
@@ -15,14 +17,18 @@ public class CraftingStation : MonoBehaviour, IInteractable
 
     private bool isOpen;
     private bool isAnimating;
+    private bool justOpened;
 
     private PlayerMovement playerMovement;
     private InventoryManager inventory;
+    private RecipeManager recipeManager; 
 
     private void Awake()
     {
-        playerMovement = FindAnyObjectByType<PlayerMovement>(); // This is okay for now, but could also be a singleton.
+        playerMovement = FindAnyObjectByType<PlayerMovement>(); 
         inventory = InventoryManager.Instance;
+
+        recipeManager = FindAnyObjectByType<RecipeManager>(); 
     }
 
     private void Start()
@@ -41,7 +47,18 @@ public class CraftingStation : MonoBehaviour, IInteractable
 
     private void Update()
     {
-        if (isOpen && !isAnimating && Input.GetKeyDown(KeyCode.Escape))
+        if (justOpened)
+        {
+            justOpened = false;
+            return;
+        }
+
+        if (isOpen && !isAnimating && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E)))
+        {
+            StartCoroutine(FadeOut());
+        }
+
+        if (isOpen && !isAnimating && NotebookController.IsNotebookOpen)
         {
             StartCoroutine(FadeOut());
         }
@@ -80,6 +97,15 @@ public class CraftingStation : MonoBehaviour, IInteractable
         );
 
         Debug.Log($"Crafted {recipe.result.itemName} x{recipe.resultAmount}");
+
+        if (recipeManager != null)
+        {
+            recipeManager.DiscoverRecipe(recipe);
+        }
+        else
+        {
+            Debug.LogWarning("RecipeManager not found in scene. Recipe could not be discovered.");
+        }
     }
 
     private bool CanCraft(RecipeData recipe)
@@ -111,6 +137,9 @@ public class CraftingStation : MonoBehaviour, IInteractable
     {
         isAnimating = true;
         isOpen = true;
+        justOpened = true;
+        
+        IsCraftingOpen = true;
 
         craftingCanvasGroup.gameObject.SetActive(true);
 
@@ -142,6 +171,8 @@ public class CraftingStation : MonoBehaviour, IInteractable
     {
         isAnimating = true;
 
+        IsCraftingOpen = false;
+
         craftingCanvasGroup.interactable = false;
         craftingCanvasGroup.blocksRaycasts = false;
 
@@ -162,7 +193,7 @@ public class CraftingStation : MonoBehaviour, IInteractable
 
         isOpen = false;
 
-        if (playerMovement != null)
+        if (playerMovement != null && !NotebookController.IsNotebookOpen)
         {
             playerMovement.SetMovementEnabled(true);
         }

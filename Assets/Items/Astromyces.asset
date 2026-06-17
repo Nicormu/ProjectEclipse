@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Astromyces
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Astromyces
-  icon: {fileID: 0}
+  itemIcon: {fileID: -1074638291239596677, guid: 61e52181b950c82abbe2b8e125660818, type: 3}
   description: An extraterrestrial organism found within a fallen meteorite. It exhibits
     an unprecedented ability to colonize and transform surrounding matter, making
     it unlike any known form of life.

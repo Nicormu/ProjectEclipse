@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class PlayerInteraction : MonoBehaviour
     [Tooltip("Drag the 'E' Canvas completely here")]
     [SerializeField] private CanvasGroup interactPromptGroup;
     [Tooltip("How fast the prompt fades in and out")]
-    [SerializeField] private float fadeSpeed = 5f; // Added a speed control
+    [SerializeField] private float fadeSpeed = 5f; 
 
     private IInteractable currentInteractable;
     private readonly Collider2D[] hitColliders = new Collider2D[10];
@@ -22,7 +23,6 @@ public class PlayerInteraction : MonoBehaviour
         contactFilter.SetLayerMask(interactableLayer);
         contactFilter.useLayerMask = true;
         
-        // Ensure the UI starts completely invisible when the game begins
         if (interactPromptGroup != null)
         {
             interactPromptGroup.alpha = 0f;
@@ -31,6 +31,14 @@ public class PlayerInteraction : MonoBehaviour
 
     void Update()
     {
+        // FIXED: Changed to IsNotebookOpen
+        if (NotebookController.IsNotebookOpen || CraftingStation.IsCraftingOpen)
+        {
+            currentInteractable = null;
+            UpdateUI();
+            return; 
+        }
+
         DetectInteractable();
         UpdateUI();
 
@@ -46,11 +54,16 @@ public class PlayerInteraction : MonoBehaviour
         
         currentInteractable = null;
         float closestDistanceSqr = float.MaxValue;
+        var processedInteractables = new HashSet<IInteractable>();
 
         for (int i = 0; i < numColliders; i++)
         {
             IInteractable interactable = hitColliders[i].GetComponentInParent<IInteractable>();
-            if (interactable == null) continue;
+            
+            if (interactable == null || !processedInteractables.Add(interactable))
+            {
+                continue;
+            }
 
             float distanceSqr = (hitColliders[i].transform.position - transform.position).sqrMagnitude;
             if (distanceSqr < closestDistanceSqr)
@@ -65,10 +78,8 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (interactPromptGroup != null)
         {
-            // 1. Determine where the alpha SHOULD be (1 if near an object, 0 if not)
             float targetAlpha = currentInteractable != null ? 1f : 0f;
             
-            // 2. Smoothly transition the current alpha toward the target alpha
             interactPromptGroup.alpha = Mathf.MoveTowards(
                 interactPromptGroup.alpha, 
                 targetAlpha, 

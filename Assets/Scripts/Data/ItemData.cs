@@ -8,7 +8,7 @@ public class ItemData : ScriptableObject
 {
     [Header("Basic Info")]
     public string itemName;
-    public Sprite icon;
+    public Sprite itemIcon;
 
     [TextArea]
     public string description;
