@@ -296,9 +296,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35ff79269852d0849b39a3b81cfc3d03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TabHoverEffect
-  selectedOffset: {x: 30, y: 0}
-  hoverOffset: {x: 350, y: 0}
-  slideSpeed: 900
+  selectedOffset: {x: 40, y: 0}
+  hoverOffset: {x: 430, y: 0}
+  slideSpeed: 1800
 --- !u!114 &208508788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,8 +415,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 106, y: 0}
-  m_SizeDelta: {x: -386.35, y: -461.88}
+  m_AnchoredPosition: {x: 136.00012, y: -10}
+  m_SizeDelta: {x: -448.00024, y: -480.00003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &228212596
 MonoBehaviour:
@@ -436,7 +436,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 235
+  m_Spacing: 200
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -717,7 +717,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5443946, y: 0.5}
   m_AnchorMax: {x: 0.5443946, y: 0.5}
-  m_AnchoredPosition: {x: -667.37195, y: -279.53073}
+  m_AnchoredPosition: {x: 178, y: -275}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &420916959
@@ -1210,7 +1210,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5443946, y: 0.5}
   m_AnchorMax: {x: 0.5443946, y: 0.5}
-  m_AnchoredPosition: {x: -1080.8306, y: -279.53073}
+  m_AnchoredPosition: {x: -178, y: -275}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &637096452
@@ -2063,9 +2063,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35ff79269852d0849b39a3b81cfc3d03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TabHoverEffect
-  selectedOffset: {x: 30, y: 0}
-  hoverOffset: {x: 350, y: 0}
-  slideSpeed: 900
+  selectedOffset: {x: 40, y: 0}
+  hoverOffset: {x: 430, y: 0}
+  slideSpeed: 1800
 --- !u!1 &1036284765
 GameObject:
   m_ObjectHideFlags: 0
@@ -2601,14 +2601,14 @@ RectTransform:
   m_GameObject: {fileID: 1285617341}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.576346, y: 0.7835007, z: 2.228946}
+  m_LocalScale: {x: 0.5763461, y: 0.7835007, z: 2.228946}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1747124006}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5443946, y: 0.5}
   m_AnchorMax: {x: 0.5443946, y: 0.5}
-  m_AnchoredPosition: {x: -850.7004, y: -280.93677}
+  m_AnchoredPosition: {x: -4.4891357, y: -275.93674}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1285617343
@@ -2763,9 +2763,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35ff79269852d0849b39a3b81cfc3d03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TabHoverEffect
-  selectedOffset: {x: 30, y: 0}
-  hoverOffset: {x: 350, y: 0}
-  slideSpeed: 900
+  selectedOffset: {x: 40, y: 0}
+  hoverOffset: {x: 430, y: 0}
+  slideSpeed: 1800
 --- !u!114 &1318675734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3157,7 +3157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5443946, y: 0.5}
   m_AnchorMax: {x: 0.5443946, y: 0.5}
-  m_AnchoredPosition: {x: 3272.6165, y: 14.224276}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1782216890

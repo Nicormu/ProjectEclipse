@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 52ddff029c54593d3834fcdd977bdf6d, type: 3}
-  m_Name: LivingCoal
+  m_Name: EffervescentCore
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Living Coal
+  itemName: 
   itemIcon: {fileID: 0}
-  description: Coal infused with Astromyces spores. Burns longer than normal coal.
+  description: 
   stackable: 1
   maxStack: 99
-  canBuy: 0
+  canBuy: 1
   buyPrice: 10
   canSell: 1
-  sellPrice: 18
+  sellPrice: 5

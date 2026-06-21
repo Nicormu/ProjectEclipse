@@ -13,7 +13,7 @@ public class PlayerInteraction : MonoBehaviour
     [Tooltip("How fast the prompt fades in and out")]
     [SerializeField] private float fadeSpeed = 5f; 
 
-    private IInteractable currentInteractable;
+    private InteractableUI currentInteractable;
     private readonly Collider2D[] hitColliders = new Collider2D[10];
     private ContactFilter2D contactFilter; 
 
@@ -54,11 +54,11 @@ public class PlayerInteraction : MonoBehaviour
         
         currentInteractable = null;
         float closestDistanceSqr = float.MaxValue;
-        var processedInteractables = new HashSet<IInteractable>();
+        var processedInteractables = new HashSet<InteractableUI>();
 
         for (int i = 0; i < numColliders; i++)
         {
-            IInteractable interactable = hitColliders[i].GetComponentInParent<IInteractable>();
+            InteractableUI interactable = hitColliders[i].GetComponentInParent<InteractableUI>();
             
             if (interactable == null || !processedInteractables.Add(interactable))
             {

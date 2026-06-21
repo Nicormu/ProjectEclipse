@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class CraftingStation : MonoBehaviour, IInteractable
+public class CraftingStation : MonoBehaviour, InteractableUI
 {
     public static bool IsCraftingOpen { get; private set; }
 

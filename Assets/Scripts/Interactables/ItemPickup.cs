@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ItemPickup : MonoBehaviour, IInteractable
+public class ItemPickup : MonoBehaviour, InteractableUI
 {
     [SerializeField] private ItemData item;
     [SerializeField] private int amount = 1;

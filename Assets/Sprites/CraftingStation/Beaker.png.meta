@@ -1,0 +1,780 @@
+fileFormatVersion: 2
+guid: 0765b69708b8ee4399d0804fcc1e102b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8214379713626754130
+    second: Beaker_0
+  - first:
+      213: -6638933297006128613
+    second: Beaker_1
+  - first:
+      213: 2339717778741609443
+    second: Beaker_2
+  - first:
+      213: 5773128145867547834
+    second: Beaker_3
+  - first:
+      213: -4426690482287479592
+    second: Beaker_4
+  - first:
+      213: 5510507303794003392
+    second: Beaker_5
+  - first:
+      213: -6000491716580677915
+    second: Beaker_6
+  - first:
+      213: 8349970720263182826
+    second: Beaker_7
+  - first:
+      213: 5330149491992084986
+    second: Beaker_8
+  - first:
+      213: -4436886409636820060
+    second: Beaker_9
+  - first:
+      213: -9102448922929945148
+    second: Beaker_10
+  - first:
+      213: 3102312148876240943
+    second: Beaker_11
+  - first:
+      213: -6403070892720632034
+    second: Beaker_12
+  - first:
+      213: 1869017660251797057
+    second: Beaker_13
+  - first:
+      213: 8121093181827196842
+    second: Beaker_14
+  - first:
+      213: 3141965530998431083
+    second: Beaker_15
+  - first:
+      213: 2642136968281701136
+    second: Beaker_16
+  - first:
+      213: 3182886611960478157
+    second: Beaker_17
+  - first:
+      213: -6223185962485605825
+    second: Beaker_18
+  - first:
+      213: -3745107112386838319
+    second: Beaker_19
+  - first:
+      213: 4447035593182916001
+    second: Beaker_20
+  - first:
+      213: 6783941422347950672
+    second: Beaker_21
+  - first:
+      213: -6427832472897292152
+    second: Beaker_22
+  - first:
+      213: 2448949394246379618
+    second: Beaker_23
+  - first:
+      213: 4109489943358021968
+    second: Beaker_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Beaker_0
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 195
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea33a1f0c29a00e80800000000000000
+      internalID: -8214379713626754130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_1
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 131
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b12df684755cdd3a0800000000000000
+      internalID: -6638933297006128613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_2
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 131
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e34f846ce8587020800000000000000
+      internalID: 2339717778741609443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_3
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 131
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab4ae3916754e1050800000000000000
+      internalID: 5773128145867547834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_4
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 131
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d4f6a0c57c3192c0800000000000000
+      internalID: -4426690482287479592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_5
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 131
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cd46d66231497c40800000000000000
+      internalID: 5510507303794003392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_6
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 131
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e6e8836398f9bca0800000000000000
+      internalID: -6000491716580677915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_7
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 131
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae9133a412e01e370800000000000000
+      internalID: 8349970720263182826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_8
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 131
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af1caedf8be78f940800000000000000
+      internalID: 5330149491992084986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_9
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 67
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4abc6dc61530d62c0800000000000000
+      internalID: -4436886409636820060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_10
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 67
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c5af927eea9da180800000000000000
+      internalID: -9102448922929945148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_11
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 67
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f28a5207670ad0b20800000000000000
+      internalID: 3102312148876240943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_12
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 67
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1f4ebfa2f8b327a0800000000000000
+      internalID: -6403070892720632034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_13
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 67
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1467d36d8a510f910800000000000000
+      internalID: 1869017660251797057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_14
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 67
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa728a2b83be3b070800000000000000
+      internalID: 8121093181827196842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_15
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 67
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6ddeabe0018a9b20800000000000000
+      internalID: 3141965530998431083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_16
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 67
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01bbb52f291caa420800000000000000
+      internalID: 2642136968281701136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_17
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 3
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc9304a8282eb2c20800000000000000
+      internalID: 3182886611960478157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_18
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 3
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3a19d6c65dc2a9a0800000000000000
+      internalID: -6223185962485605825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_19
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 3
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d0c4687ce4b60cc0800000000000000
+      internalID: -3745107112386838319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_20
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 3
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1adaf238f4b07bd30800000000000000
+      internalID: 4447035593182916001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_21
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 3
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05a9b10e7c6652e50800000000000000
+      internalID: 6783941422347950672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_22
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 3
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8887c390c60cbc6a0800000000000000
+      internalID: -6427832472897292152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_23
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 3
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 268a6fcbf7a6cf120800000000000000
+      internalID: 2448949394246379618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Beaker_24
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 3
+        width: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05125e99457d70930800000000000000
+      internalID: 4109489943358021968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Beaker_0: -8214379713626754130
+      Beaker_1: -6638933297006128613
+      Beaker_10: -9102448922929945148
+      Beaker_11: 3102312148876240943
+      Beaker_12: -6403070892720632034
+      Beaker_13: 1869017660251797057
+      Beaker_14: 8121093181827196842
+      Beaker_15: 3141965530998431083
+      Beaker_16: 2642136968281701136
+      Beaker_17: 3182886611960478157
+      Beaker_18: -6223185962485605825
+      Beaker_19: -3745107112386838319
+      Beaker_2: 2339717778741609443
+      Beaker_20: 4447035593182916001
+      Beaker_21: 6783941422347950672
+      Beaker_22: -6427832472897292152
+      Beaker_23: 2448949394246379618
+      Beaker_24: 4109489943358021968
+      Beaker_3: 5773128145867547834
+      Beaker_4: -4426690482287479592
+      Beaker_5: 5510507303794003392
+      Beaker_6: -6000491716580677915
+      Beaker_7: 8349970720263182826
+      Beaker_8: 5330149491992084986
+      Beaker_9: -4436886409636820060
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

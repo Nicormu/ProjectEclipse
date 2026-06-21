@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Coal
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Coal
-  icon: {fileID: 0}
-  description: A dense carbon-rich fuel recovered from old industrial deposits. Burns
-    hot and steadily, making it useful for crafting and energy production.
+  itemIcon: {fileID: 0}
+  description: A common fuel source valued for its steady heat output.
   stackable: 1
   maxStack: 99
+  canBuy: 1
+  buyPrice: 10
+  canSell: 1
+  sellPrice: 5
