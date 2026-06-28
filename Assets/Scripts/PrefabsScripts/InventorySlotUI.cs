@@ -43,7 +43,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (!isDragging && Item != null && rootCanvas != null && CraftingStation.IsCraftingOpen)
         {
-            BeginDragInternal();
+            BeginDragInternal(null);
         }
     }
 
@@ -53,11 +53,11 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         
         if (!isDragging && Item != null && rootCanvas != null && CraftingStation.IsCraftingOpen)
         {
-            BeginDragInternal();
+            BeginDragInternal(eventData);
         }
     }
 
-    private void BeginDragInternal()
+    private void BeginDragInternal(PointerEventData eventData = null)
     {
         isDragging = true;
         canvasGroup.alpha = 0.5f;
@@ -112,11 +112,14 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (dragIcon == null || rootCanvas == null) return;
 
+        Vector2 localPoint;
+        Camera eventCamera = eventData?.eventCamera ?? Camera.main;
+        
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rootCanvas.transform as RectTransform,
-            eventData.position,
-            eventData.pressEventCamera,
-            out Vector2 localPoint);
+            eventData != null ? eventData.position : Input.mousePosition,
+            eventCamera,
+            out localPoint);
 
         dragIcon.anchoredPosition = localPoint;
     }
