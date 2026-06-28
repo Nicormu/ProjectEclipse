@@ -16,13 +16,17 @@ public class CraftingBeakerController : MonoBehaviour
 
     private RecipeData currentRecipe;
     private readonly List<IngredientSlotUI> activeSlots = new();
+    private int totalRequiredVolume;
+    private int totalFilledVolume;
 
-    public bool IsRecipeReady => currentRecipe != null && activeSlots.TrueForAll(s => s.IsFull);
+    public bool IsRecipeReady => currentRecipe != null && totalFilledVolume >= totalRequiredVolume && totalRequiredVolume > 0;
 
     public void LoadRecipe(RecipeData recipe)
     {
         ClearSlots();
         currentRecipe = recipe;
+        totalRequiredVolume = 0;
+        totalFilledVolume = 0;
 
         UpdateBeakerVisual(instant: true);
 
@@ -36,6 +40,7 @@ public class CraftingBeakerController : MonoBehaviour
             {
                 slotUI.Setup(ingredient, this);
                 activeSlots.Add(slotUI);
+                totalRequiredVolume += ingredient.amount;
             }
         }
 
@@ -44,11 +49,22 @@ public class CraftingBeakerController : MonoBehaviour
 
     public void RequestFill(IngredientSlotUI slot, int draggedAmount)
     {
-        int amountToAdd = Mathf.Min(draggedAmount, slot.RequiredAmount - slot.FilledAmount);
+        if (slot.IsFull || currentRecipe == null) return;
+
+        int spaceLeft = slot.RequiredAmount - slot.FilledAmount;
+        int amountToAdd = Mathf.Min(draggedAmount, spaceLeft);
+        
         if (amountToAdd <= 0) return;
 
+        // Update slot state
         slot.AddFilled(amountToAdd);
-        UpdateBeakerVisual();
+        
+        // Update global beaker volume tracking
+        totalFilledVolume += amountToAdd;
+        
+        // Smoothly update the main beaker visual
+        float fillRatio = totalRequiredVolume > 0 ? (float)totalFilledVolume / totalRequiredVolume : 0f;
+        beakerVisual?.SetFill(fillRatio);
 
         if (IsRecipeReady)
             onRecipeReady?.Invoke();
@@ -59,37 +75,30 @@ public class CraftingBeakerController : MonoBehaviour
         if (!IsRecipeReady || craftingStation == null) return;
 
         craftingStation.Craft(currentRecipe); 
-        LoadRecipe(currentRecipe);         
+        
+        // Reset slots and visual after crafting
+        foreach (var slot in activeSlots)
+            slot.ResetSlot();
+            
+        totalFilledVolume = 0;
+        beakerVisual?.SetFill(0f, instant: true);
+        
+        onRecipeNotReady?.Invoke();
     }
 
     private void ClearSlots()
     {
         foreach (var slot in activeSlots)
-            if (slot != null) Destroy(slot.gameObject);
+            if (slot != null && slot.gameObject != null) Destroy(slot.gameObject);
 
         activeSlots.Clear();
     }
 
-    private void UpdateBeakerVisual(bool instant = false)
+    public void UpdateBeakerVisual(bool instant = false)
     {
         if (beakerVisual == null) return;
-
-        if (activeSlots.Count == 0)
-        {
-            beakerVisual.SetFill(0f, instant);
-            return;
-        }
-
-        int totalRequired = 0;
-        int totalFilled = 0;
-
-        foreach (var slot in activeSlots)
-        {
-            totalRequired += slot.RequiredAmount;
-            totalFilled += slot.FilledAmount;
-        }
-
-        float ratio = totalRequired > 0 ? (float)totalFilled / totalRequired : 0f;
-        beakerVisual.SetFill(ratio, instant);
+        
+        float fillRatio = totalRequiredVolume > 0 ? (float)totalFilledVolume / totalRequiredVolume : 0f;
+        beakerVisual.SetFill(fillRatio, instant);
     }
 }

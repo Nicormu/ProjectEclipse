@@ -19,6 +19,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private CanvasGroup canvasGroup;
     private Canvas rootCanvas;
     private RectTransform dragIcon;
+    private bool isDragging = false;
 
     private void Awake()
     {
@@ -31,31 +32,39 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         Item = item;
         Amount = amount;
 
-        nameText.text = item.itemName;
+        if (nameText != null) nameText.text = item?.itemName ?? string.Empty;
+        if (descriptionText != null) descriptionText.text = item?.description ?? string.Empty;
+        if (iconImage != null) iconImage.sprite = item?.itemIcon;
+        if (amountText != null) amountText.text = $"x{amount}";
+    }
 
-        if (descriptionText != null)
-            descriptionText.text = item.description;
-
-        if (iconImage != null)
-            iconImage.sprite = item.itemIcon;
-
-        amountText.text = $"x{amount}";
+    // Public method to allow UI elements (like Text or Buttons) to trigger drag via event triggers
+    public void StartDrag()
+    {
+        if (!isDragging && Item != null && rootCanvas != null && CraftingStation.IsCraftingOpen)
+        {
+            BeginDragInternal();
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("OnBeginDrag called on " + gameObject.name);
-
-        if (Item == null || rootCanvas == null || !CraftingStation.IsCraftingOpen)
-        {
-            eventData.pointerDrag = null;
-            return;
-        }
+        if (eventData.button != PointerEventData.InputButton.Left) return;
         
+        if (!isDragging && Item != null && rootCanvas != null && CraftingStation.IsCraftingOpen)
+        {
+            BeginDragInternal();
+        }
+    }
 
+    private void BeginDragInternal()
+    {
+        isDragging = true;
         canvasGroup.alpha = 0.5f;
-        canvasGroup.blocksRaycasts = false;
-
+        
+        // Delay blocking raycasts slightly to ensure the drag icon spawns correctly
+        StartCoroutine(DelayRaycastBlock());
+        
         if (iconImage != null && iconImage.sprite != null)
         {
             GameObject ghost = new GameObject("DragIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -74,13 +83,21 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
+    private System.Collections.IEnumerator DelayRaycastBlock()
+    {
+        yield return null; // Wait one frame to ensure pointer position is registered
+        canvasGroup.blocksRaycasts = false;
+    }
+
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isDragging) return;
         UpdateDragIconPosition(eventData);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        isDragging = false;
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
 
@@ -93,7 +110,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private void UpdateDragIconPosition(PointerEventData eventData)
     {
-        if (dragIcon == null) return;
+        if (dragIcon == null || rootCanvas == null) return;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rootCanvas.transform as RectTransform,

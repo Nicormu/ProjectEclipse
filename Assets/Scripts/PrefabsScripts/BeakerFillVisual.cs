@@ -18,10 +18,11 @@ public class BeakerFillVisual : MonoBehaviour
     private void Awake()
     {
         beakerImage = GetComponent<Image>();
-
         if (fillFrames != null && fillFrames.Length > 0)
         {
             beakerImage.sprite = fillFrames[0];
+            displayedFill = 0f;
+            targetFill = 0f;
         }
     }
 
@@ -48,10 +49,13 @@ public class BeakerFillVisual : MonoBehaviour
 
     private void ApplyFrame(float t)
     {
-        if (fillFrames == null || fillFrames.Length == 0) return;
+        if (fillFrames == null || fillFrames.Length == 0 || beakerImage == null) return;
 
         int index = Mathf.RoundToInt(t * (fillFrames.Length - 1));
         index = Mathf.Clamp(index, 0, fillFrames.Length - 1);
-        beakerImage.sprite = fillFrames[index];
+        
+        // Prevent unnecessary sprite assignments to reduce GC overhead
+        if (beakerImage.sprite != fillFrames[index])
+            beakerImage.sprite = fillFrames[index];
     }
 }

@@ -19,7 +19,7 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     [SerializeField] private Sprite[] level3Frames;
     [SerializeField] private float beakerFrameRate = 10f;
 
-    [Header("Feedback Hooks (wire animations here later)")]
+    [Header("Feedback Hooks")]
     public UnityEvent onAccepted;
     public UnityEvent onRejected;
 
@@ -54,6 +54,7 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
         if (dragged == null || dragged.Item == null)
             return;
 
+        // Allow partial fills if the slot isn't full yet
         if (controller == null || dragged.Item != RequiredItem || IsFull)
         {
             onRejected?.Invoke();
@@ -67,7 +68,11 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     {
         FilledAmount = Mathf.Min(RequiredAmount, FilledAmount + amount);
         RefreshDisplay();
-        PlayBeakerLevel(FilledAmount);
+        
+        // Update individual slot progress visual
+        int level = Mathf.CeilToInt((float)FilledAmount / RequiredAmount * 3f);
+        PlayBeakerLevel(level);
+        
         onAccepted?.Invoke();
     }
 
@@ -114,7 +119,7 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
         float delay = 1f / Mathf.Max(1f, beakerFrameRate);
         int i = 0;
 
-        while (true)
+        while (beakerImage != null && gameObject.activeInHierarchy)
         {
             beakerImage.sprite = frames[i];
             i = (i + 1) % frames.Length;
