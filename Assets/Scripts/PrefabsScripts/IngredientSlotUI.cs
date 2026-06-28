@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,6 +11,14 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI amountText;
 
+    [Header("Beaker Visual")]
+    [SerializeField] private Image beakerImage;
+    [SerializeField] private Sprite emptyBeakerSprite;
+    [SerializeField] private Sprite[] level1Frames;
+    [SerializeField] private Sprite[] level2Frames;
+    [SerializeField] private Sprite[] level3Frames;
+    [SerializeField] private float beakerFrameRate = 10f;
+
     [Header("Feedback Hooks (wire animations here later)")]
     public UnityEvent onAccepted;
     public UnityEvent onRejected;
@@ -20,6 +29,7 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     public bool IsFull => FilledAmount >= RequiredAmount;
 
     private CraftingBeakerController controller;
+    private Coroutine beakerAnimation;
 
     public void Setup(Ingredient ingredient, CraftingBeakerController owningController)
     {
@@ -32,6 +42,7 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
             iconImage.sprite = RequiredItem != null ? RequiredItem.itemIcon : null;
 
         RefreshDisplay();
+        PlayBeakerLevel(0);
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -56,6 +67,7 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     {
         FilledAmount = Mathf.Min(RequiredAmount, FilledAmount + amount);
         RefreshDisplay();
+        PlayBeakerLevel(FilledAmount);
         onAccepted?.Invoke();
     }
 
@@ -63,11 +75,59 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     {
         FilledAmount = 0;
         RefreshDisplay();
+        PlayBeakerLevel(0);
     }
 
     private void RefreshDisplay()
     {
         if (amountText != null)
             amountText.text = $"{FilledAmount}/{RequiredAmount}";
+    }
+
+    private void PlayBeakerLevel(int level)
+    {
+        if (beakerImage == null) return;
+
+        if (beakerAnimation != null)
+        {
+            StopCoroutine(beakerAnimation);
+            beakerAnimation = null;
+        }
+
+        Sprite[] frames;
+        if (level <= 0) frames = null;
+        else if (level == 1) frames = level1Frames;
+        else if (level == 2) frames = level2Frames;
+        else frames = level3Frames;
+
+        if (frames == null || frames.Length == 0)
+        {
+            beakerImage.sprite = emptyBeakerSprite;
+            return;
+        }
+
+        beakerAnimation = StartCoroutine(LoopFrames(frames));
+    }
+
+    private IEnumerator LoopFrames(Sprite[] frames)
+    {
+        float delay = 1f / Mathf.Max(1f, beakerFrameRate);
+        int i = 0;
+
+        while (true)
+        {
+            beakerImage.sprite = frames[i];
+            i = (i + 1) % frames.Length;
+            yield return new WaitForSeconds(delay);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (beakerAnimation != null)
+        {
+            StopCoroutine(beakerAnimation);
+            beakerAnimation = null;
+        }
     }
 }

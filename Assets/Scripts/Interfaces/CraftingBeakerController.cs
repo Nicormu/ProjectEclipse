@@ -8,6 +8,7 @@ public class CraftingBeakerController : MonoBehaviour
     [SerializeField] private CraftingStation craftingStation;
     [SerializeField] private Transform slotsParent;
     [SerializeField] private GameObject ingredientSlotPrefab;
+    [SerializeField] private BeakerFillVisual beakerVisual;
 
     [Header("Events")]
     public UnityEvent onRecipeReady;
@@ -22,6 +23,8 @@ public class CraftingBeakerController : MonoBehaviour
     {
         ClearSlots();
         currentRecipe = recipe;
+
+        UpdateBeakerVisual(instant: true);
 
         if (recipe == null || recipe.ingredients == null) return;
 
@@ -45,6 +48,7 @@ public class CraftingBeakerController : MonoBehaviour
         if (amountToAdd <= 0) return;
 
         slot.AddFilled(amountToAdd);
+        UpdateBeakerVisual();
 
         if (IsRecipeReady)
             onRecipeReady?.Invoke();
@@ -64,5 +68,28 @@ public class CraftingBeakerController : MonoBehaviour
             if (slot != null) Destroy(slot.gameObject);
 
         activeSlots.Clear();
+    }
+
+    private void UpdateBeakerVisual(bool instant = false)
+    {
+        if (beakerVisual == null) return;
+
+        if (activeSlots.Count == 0)
+        {
+            beakerVisual.SetFill(0f, instant);
+            return;
+        }
+
+        int totalRequired = 0;
+        int totalFilled = 0;
+
+        foreach (var slot in activeSlots)
+        {
+            totalRequired += slot.RequiredAmount;
+            totalFilled += slot.FilledAmount;
+        }
+
+        float ratio = totalRequired > 0 ? (float)totalFilled / totalRequired : 0f;
+        beakerVisual.SetFill(ratio, instant);
     }
 }
