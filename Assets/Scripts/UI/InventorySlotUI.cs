@@ -113,7 +113,9 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (dragIcon == null || rootCanvas == null) return;
 
         Vector2 localPoint;
-        Camera eventCamera = eventData?.eventCamera ?? Camera.main;
+        // Use pressEventCamera for accuracy, fallback to Canvas world camera. 
+        // Passing null is safe and correctly handles Screen Space - Overlay mode.
+        Camera eventCamera = eventData?.pressEventCamera ?? rootCanvas.worldCamera;
         
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rootCanvas.transform as RectTransform,

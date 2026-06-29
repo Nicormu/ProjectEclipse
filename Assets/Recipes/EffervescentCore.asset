@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95a42ba1f2fa9fe2fa6ccbd5a2f3519a, type: 3}
   m_Name: EffervecsentCore
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
-  ingredients: []
-  result: {fileID: 0}
+  ingredients:
+  - item: {fileID: 11400000, guid: b85a9bf0c971e6109bf320c0381a753a, type: 2}
+    amount: 1
+  - item: {fileID: 11400000, guid: bd25817d3074631599a0707ef9a87b3b, type: 2}
+    amount: 1
+  - item: {fileID: 11400000, guid: 6088774c8cfa9f90b8cc1c504a75792d, type: 2}
+    amount: 1
+  result: {fileID: 11400000, guid: 354309dbd8f415a4aa366c8638fb4678, type: 2}
   resultAmount: 1
