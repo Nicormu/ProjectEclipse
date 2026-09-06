@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52ddff029c54593d3834fcdd977bdf6d, type: 3}
   m_Name: EffervescentCore
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: 
+  itemName: Effervecent Core
   itemIcon: {fileID: 0}
-  description: 
+  description: A bubbling core that stores the energy of a reaction that never fully
+    settles.
   stackable: 1
   maxStack: 99
-  canBuy: 1
+  canBuy: 0
   buyPrice: 10
   canSell: 1
-  sellPrice: 5
+  sellPrice: 18

@@ -54,7 +54,7 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
         if (dragged == null || dragged.Item == null)
             return;
 
-        // Allow partial fills if the slot isn't full yet
+        // Reject wrong item type or already-full slot
         if (controller == null || dragged.Item != RequiredItem || IsFull)
         {
             onRejected?.Invoke();
@@ -68,11 +68,13 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     {
         FilledAmount = Mathf.Min(RequiredAmount, FilledAmount + amount);
         RefreshDisplay();
-        
-        // Update individual slot progress visual
-        int level = Mathf.CeilToInt((float)FilledAmount / RequiredAmount * 3f);
+
+        // Update individual slot progress visual (use floor to show 1st fill as level 1)
+        int level = RequiredAmount > 0
+            ? Mathf.FloorToInt((float)FilledAmount / RequiredAmount * MaxBeakerLevels)
+            : 0;
         PlayBeakerLevel(level);
-        
+
         onAccepted?.Invoke();
     }
 
@@ -89,21 +91,23 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
             amountText.text = $"{FilledAmount}/{RequiredAmount}";
     }
 
+    [SerializeField] private int maxBeakerLevels = 3;
+
+    /// <summary>Returns the configured number of beaker fill levels for display.</summary>
+    public int MaxBeakerLevels => maxBeakerLevels;
+
     private void PlayBeakerLevel(int level)
     {
         if (beakerImage == null) return;
 
-        if (beakerAnimation != null)
-        {
-            StopCoroutine(beakerAnimation);
-            beakerAnimation = null;
-        }
+        StopBeakerAnimation();
 
         Sprite[] frames;
         if (level <= 0) frames = null;
         else if (level == 1) frames = level1Frames;
         else if (level == 2) frames = level2Frames;
-        else frames = level3Frames;
+        else if (maxBeakerLevels >= 3 && level == 3) frames = level3Frames;
+        else frames = null; // beyond configured levels — show empty
 
         if (frames == null || frames.Length == 0)
         {
@@ -128,6 +132,12 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     }
 
     private void OnDisable()
+    {
+        StopBeakerAnimation();
+    }
+
+    /// <summary>Stop the beaker frame animation coroutine (nulls reference).</summary>
+    private void StopBeakerAnimation()
     {
         if (beakerAnimation != null)
         {

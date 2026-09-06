@@ -7,6 +7,10 @@ public class RecipeSlotUI : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI recipeFormulaText; // Single text element for the whole line
 
+    [Header("Formatting")]
+    [SerializeField] private string ingredientSeparator = " + ";
+    [SerializeField] private string resultSeparator = " -> ";
+
     public void Setup(RecipeData recipe)
     {
         if (recipe == null || recipe.result == null || recipe.ingredients == null) return;
@@ -22,11 +26,11 @@ public class RecipeSlotUI : MonoBehaviour
 
             if (i < recipe.ingredients.Length - 1)
             {
-                formula.Append(" + ");
+                formula.Append(ingredientSeparator);
             }
         }
 
-        formula.Append($" -> {recipe.result.itemName} x {recipe.resultAmount}");
+        formula.Append($"{resultSeparator}{recipe.result.itemName} x {recipe.resultAmount}");
 
         if (recipeFormulaText != null)
         {

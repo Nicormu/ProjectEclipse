@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52ddff029c54593d3834fcdd977bdf6d, type: 3}
   m_Name: Vinegar
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: 
+  itemName: Vinegar
   itemIcon: {fileID: 0}
-  description: 
+  description: A sharp-smelling liquid often used to trigger simple chemical reactions.
   stackable: 1
   maxStack: 99
   canBuy: 1
-  buyPrice: 10
+  buyPrice: 5
   canSell: 1
-  sellPrice: 5
+  sellPrice: 2

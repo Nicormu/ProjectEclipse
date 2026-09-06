@@ -5,7 +5,7 @@ using TMPro;
 
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(RectTransform))]
-public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerUpHandler
 {
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI descriptionText;
@@ -20,6 +20,25 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Canvas rootCanvas;
     private RectTransform dragIcon;
     private bool isDragging = false;
+
+    /// <summary>Returns true when this slot can initiate a drag (has an item, valid canvas, and crafting UI is open).</summary>
+    private bool CanStartDrag => Item != null && rootCanvas != null && _craftingOpen;
+
+    private void OnEnable()
+    {
+        CraftingStation.onCraftingOpened.AddListener(OnCraftingOpened);
+        CraftingStation.onCraftingClosed.AddListener(OnCraftingClosed);
+    }
+
+    private void OnDisable()
+    {
+        CraftingStation.onCraftingOpened.RemoveListener(OnCraftingOpened);
+        CraftingStation.onCraftingClosed.RemoveListener(OnCraftingClosed);
+    }
+
+    private bool _craftingOpen;
+    private void OnCraftingOpened() => _craftingOpen = true;
+    private void OnCraftingClosed() => _craftingOpen = false;
 
     private void Awake()
     {
@@ -38,10 +57,14 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (amountText != null) amountText.text = $"x{amount}";
     }
 
-    // Public method to allow UI elements (like Text or Buttons) to trigger drag via event triggers
+    // Public method to allow UI elements (like Text or Buttons) to trigger drag via event triggers.
+    // This is the ONLY manual entry point besides OnBeginDrag — OnPointerDown no longer starts drags,
+    // since a plain click (no movement) fires PointerDown without ever firing OnBeginDrag/OnEndDrag,
+    // which left ghosts stuck and canvasGroup.blocksRaycasts permanently false.
+    // Guarded by left mouse button check to prevent right-click drags from non-pointer sources.
     public void StartDrag()
     {
-        if (!isDragging && Item != null && rootCanvas != null && CraftingStation.IsCraftingOpen)
+        if (!isDragging && CanStartDrag && Input.GetMouseButton(0))
         {
             BeginDragInternal(null);
         }
@@ -50,8 +73,8 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
-        
-        if (!isDragging && Item != null && rootCanvas != null && CraftingStation.IsCraftingOpen)
+
+        if (!isDragging && CanStartDrag)
         {
             BeginDragInternal(eventData);
         }
@@ -61,18 +84,19 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         isDragging = true;
         canvasGroup.alpha = 0.5f;
-        
+
         // Delay blocking raycasts slightly to ensure the drag icon spawns correctly
         StartCoroutine(DelayRaycastBlock());
-        
-        if (iconImage != null && iconImage.sprite != null)
+
+        // Always use Item.itemIcon for the ghost — independent of whether iconImage is visible/enabled
+        if (Item != null && Item.itemIcon != null)
         {
             GameObject ghost = new GameObject("DragIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             ghost.transform.SetParent(rootCanvas.transform, false);
             ghost.transform.SetAsLastSibling();
 
             Image ghostImage = ghost.GetComponent<Image>();
-            ghostImage.sprite = iconImage.sprite;
+            ghostImage.sprite = Item.itemIcon;
             ghostImage.raycastTarget = false;
             ghostImage.preserveAspect = true;
 
@@ -97,6 +121,22 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        EndDragInternal();
+    }
+
+    // Safety net: if a drag was started via StartDrag() (no PointerEventData) or interrupted in a way
+    // that never raised OnEndDrag (focus loss, pointer released outside a draggable, etc.), this ensures
+    // the ghost gets destroyed and raycasts/alpha get restored instead of leaving the slot stuck.
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (isDragging)
+        {
+            EndDragInternal();
+        }
+    }
+
+    private void EndDragInternal()
+    {
         isDragging = false;
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
@@ -113,13 +153,24 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (dragIcon == null || rootCanvas == null) return;
 
         Vector2 localPoint;
-        // Use pressEventCamera for accuracy, fallback to Canvas world camera. 
-        // Passing null is safe and correctly handles Screen Space - Overlay mode.
-        Camera eventCamera = eventData?.pressEventCamera ?? rootCanvas.worldCamera;
-        
+        Camera eventCamera = rootCanvas.worldCamera;
+        Vector2 screenPos;
+
+        if (eventData != null)
+        {
+            eventCamera = eventData.pressEventCamera ?? eventCamera;
+            screenPos = eventData.position;
+        }
+        else
+        {
+            // No PointerEventData available (e.g. called from StartDrag()).
+            // Falls back to the mouse position directly — not touch-aware.
+            screenPos = Input.mousePosition;
+        }
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rootCanvas.transform as RectTransform,
-            eventData != null ? eventData.position : Input.mousePosition,
+            screenPos,
             eventCamera,
             out localPoint);
 

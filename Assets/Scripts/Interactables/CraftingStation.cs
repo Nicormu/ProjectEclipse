@@ -1,27 +1,43 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 public class CraftingStation : MonoBehaviour, InteractableUI
 {
+    /// <summary>Whether the crafting overlay is currently open. Polling this property is discouraged; use onCraftingOpened/onCraftingClosed events instead.</summary>
     public static bool IsCraftingOpen { get; private set; }
+
+    public static UnityEvent onCraftingOpened = new();
+    public static UnityEvent onCraftingClosed = new();
 
     [Header("UI")]
     [SerializeField] private CanvasGroup craftingCanvasGroup;
     [SerializeField] private float fadeDuration = 0.25f;
+    [SerializeField] private NotebookController notebookController;
+    [SerializeField] private CraftingBeakerController beakerController;
+    [SerializeField] private KeyCode closeKey = KeyCode.Escape;
 
     [Header("Recipes")]
+#if UNITY_EDITOR
+    [SerializeField, Tooltip("Used for quick testing when opening the crafting station.")]
+    private RecipeData testRecipe;
+#endif
+
     [SerializeField] private RecipeData[] availableRecipes;
-    [SerializeField] private RecipeData testRecipe;
 
     public RecipeData[] AvailableRecipes => availableRecipes;
+
+    [Header("Overlay")]
+    [SerializeField] private OverlayCloseTrigger overlayClose;
 
     private bool isOpen;
     private bool isAnimating;
     private bool justOpened;
+    private bool isNotebookOpen; // tracks NotebookController state via events
 
     private PlayerMovement playerMovement;
     private InventoryManager inventory;
-    private RecipeManager recipeManager; 
+    private RecipeManager recipeManager;
 
     private void Awake()
     {
@@ -29,6 +45,12 @@ public class CraftingStation : MonoBehaviour, InteractableUI
         inventory = InventoryManager.Instance;
 
         recipeManager = FindAnyObjectByType<RecipeManager>(); 
+
+        if (notebookController == null)
+            notebookController = FindAnyObjectByType<NotebookController>();
+
+        if (beakerController == null)
+            beakerController = FindAnyObjectByType<CraftingBeakerController>();
     }
 
     private void Start()
@@ -45,6 +67,21 @@ public class CraftingStation : MonoBehaviour, InteractableUI
         craftingCanvasGroup.gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        NotebookController.onNotebookOpened.AddListener(OnNotebookOpened);
+        NotebookController.onNotebookClosed.AddListener(OnNotebookClosed);
+    }
+
+    private void OnDisable()
+    {
+        NotebookController.onNotebookOpened.RemoveListener(OnNotebookOpened);
+        NotebookController.onNotebookClosed.RemoveListener(OnNotebookClosed);
+    }
+
+    private void OnNotebookOpened() => isNotebookOpen = true;
+    private void OnNotebookClosed() => isNotebookOpen = false;
+
     private void Update()
     {
         if (justOpened)
@@ -53,12 +90,9 @@ public class CraftingStation : MonoBehaviour, InteractableUI
             return;
         }
 
-        if (isOpen && !isAnimating && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E)))
-        {
-            StartCoroutine(FadeOut());
-        }
-
-        if (isOpen && !isAnimating && NotebookController.IsNotebookOpen)
+        // Note: closeKey defaults to Escape in the inspector; Tab is not included
+        // to avoid conflicts with NotebookController's tab toggle.
+        if (isOpen && !isAnimating && Input.GetKeyDown(closeKey))
         {
             StartCoroutine(FadeOut());
         }
@@ -138,14 +172,28 @@ public class CraftingStation : MonoBehaviour, InteractableUI
         isAnimating = true;
         isOpen = true;
         justOpened = true;
-        
+
         IsCraftingOpen = true;
+        onCraftingOpened?.Invoke();
+        overlayClose?.PanelOpened();
 
         craftingCanvasGroup.gameObject.SetActive(true);
 
         if (playerMovement != null)
         {
             playerMovement.SetMovementEnabled(false);
+        }
+
+        if (notebookController != null)
+        {
+            notebookController.OpenToTab(NotebookTab.Inventory);
+        }
+
+        if (beakerController != null)
+        {
+#if UNITY_EDITOR
+            beakerController.LoadRecipe(testRecipe);
+#endif
         }
 
         float elapsed = 0f;
@@ -170,11 +218,24 @@ public class CraftingStation : MonoBehaviour, InteractableUI
     private IEnumerator FadeOut()
     {
         isAnimating = true;
+        overlayClose?.PanelClosed();
 
         IsCraftingOpen = false;
+        onCraftingClosed?.Invoke();
 
         craftingCanvasGroup.interactable = false;
         craftingCanvasGroup.blocksRaycasts = false;
+
+        if (notebookController != null)
+        {
+            notebookController.CloseIfOpen();
+        }
+
+        if (beakerController != null)
+        {
+            beakerController.CancelAndRestore();
+            beakerController.LoadRecipe(null);
+        }
 
         float elapsed = 0f;
 
@@ -193,7 +254,7 @@ public class CraftingStation : MonoBehaviour, InteractableUI
 
         isOpen = false;
 
-        if (playerMovement != null && !NotebookController.IsNotebookOpen)
+        if (playerMovement != null && !isNotebookOpen)
         {
             playerMovement.SetMovementEnabled(true);
         }
@@ -201,8 +262,10 @@ public class CraftingStation : MonoBehaviour, InteractableUI
         isAnimating = false;
     }
 
+#if UNITY_EDITOR
     public void CraftTestRecipe()
     {
         Craft(testRecipe);
     }
+#endif
 }

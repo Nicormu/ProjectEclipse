@@ -1,9 +1,14 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 public class NotebookController : MonoBehaviour
 {
-    public static bool IsNotebookOpen { get; private set; } 
+    /// <summary>Whether the notebook overlay is currently open. Polling this property is discouraged; use onNotebookOpened/onNotebookClosed events instead.</summary>
+    public static bool IsNotebookOpen { get; private set; }
+
+    public static UnityEvent onNotebookOpened = new();
+    public static UnityEvent onNotebookClosed = new();
 
     [Header("UI")]
     [SerializeField] private RectTransform notebookPanel; 
@@ -24,7 +29,11 @@ public class NotebookController : MonoBehaviour
     [Header("Player")]
     [SerializeField] private PlayerMovement playerMovement;
 
+    [Header("Overlay")]
+    [SerializeField] private OverlayCloseTrigger overlayClose;
+
     private bool isOpen;
+    private bool isCraftingOpen; // tracks CraftingStation state via events
     private Coroutine moveRoutine;
 
     private readonly KeyCode toggleKey = KeyCode.Tab;
@@ -40,6 +49,21 @@ public class NotebookController : MonoBehaviour
         if (tasksTabButton != null)
             tasksTabButton.onClick.AddListener(() => OnTabButtonClicked(NotebookTab.Tasks));
     }
+
+    private void OnEnable()
+    {
+        CraftingStation.onCraftingOpened.AddListener(OnCraftingOpened);
+        CraftingStation.onCraftingClosed.AddListener(OnCraftingClosed);
+    }
+
+    private void OnDisable()
+    {
+        CraftingStation.onCraftingOpened.RemoveListener(OnCraftingOpened);
+        CraftingStation.onCraftingClosed.RemoveListener(OnCraftingClosed);
+    }
+
+    private void OnCraftingOpened() => isCraftingOpen = true;
+    private void OnCraftingClosed() => isCraftingOpen = false;
 
     private void Update()
     {
@@ -71,7 +95,28 @@ public class NotebookController : MonoBehaviour
         }
     }
 
-    // NEW: The mechanical "Close, Swap, Open" animation
+    public void OpenToTab(NotebookTab tab)
+    {
+        if (!isOpen)
+        {
+            notebookDisplay.SetTabInstant(tab);
+            SetOpen(true);
+        }
+        else if (notebookDisplay.currentTab != tab)
+        {
+            if (moveRoutine != null) StopCoroutine(moveRoutine);
+            moveRoutine = StartCoroutine(AnimateTabChange(tab));
+        }
+    }
+
+    public void CloseIfOpen()
+    {
+        if (isOpen)
+        {
+            SetOpen(false);
+        }
+    }
+
     private IEnumerator AnimateTabChange(NotebookTab newTab)
     {
         yield return StartCoroutine(MovePanelRoutine(closedPosition));
@@ -88,16 +133,23 @@ public class NotebookController : MonoBehaviour
         if (isOpen == shouldBeOpen) return;
 
         isOpen = shouldBeOpen;
-        IsNotebookOpen = isOpen; 
+        IsNotebookOpen = isOpen;
 
         if (isOpen)
         {
+            onNotebookOpened?.Invoke();
+            overlayClose?.PanelOpened(); // count before branch — safe when nothing is actually open
             notebookDisplay.Refresh();
         }
-
-        if (playerMovement != null) 
+        else
         {
-            bool canPlayerMove = !isOpen && !CraftingStation.IsCraftingOpen;
+            onNotebookClosed?.Invoke();
+            overlayClose?.PanelClosed();
+        }
+
+        if (playerMovement != null)
+        {
+            bool canPlayerMove = !isOpen && !isCraftingOpen;
             playerMovement.SetMovementEnabled(canPlayerMove);
         }
 

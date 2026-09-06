@@ -18,12 +18,21 @@ public class BeakerFillVisual : MonoBehaviour
     private void Awake()
     {
         beakerImage = GetComponent<Image>();
-        if (fillFrames != null && fillFrames.Length > 0)
+        if (fillFrames == null || fillFrames.Length == 0)
         {
-            beakerImage.sprite = fillFrames[0];
-            displayedFill = 0f;
-            targetFill = 0f;
+            Debug.LogError("BeakerFillVisual: fillFrames array is not assigned. No sprites will render.", this);
+            enabled = false;
+            return;
         }
+        if (fillFrames[0] == null)
+        {
+            Debug.LogError("BeakerFillVisual: fillFrames[0] (empty beaker sprite) is not assigned.", this);
+            enabled = false;
+            return;
+        }
+        beakerImage.sprite = fillFrames[0];
+        displayedFill = 0f;
+        targetFill = 0f;
     }
 
     private void Update()

@@ -88,6 +88,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IngredientSlotUI
   iconImage: {fileID: 3057806981887795400}
   amountText: {fileID: 3475029867459613165}
+  beakerImage: {fileID: 3057806981887795400}
+  emptyBeakerSprite: {fileID: -8214379713626754130, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  level1Frames:
+  - {fileID: -6638933297006128613, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 2339717778741609443, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 5773128145867547834, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: -4426690482287479592, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 5510507303794003392, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: -6000491716580677915, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 8349970720263182826, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 5330149491992084986, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  level2Frames:
+  - {fileID: -4436886409636820060, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: -9102448922929945148, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 3102312148876240943, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: -6403070892720632034, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 1869017660251797057, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 8121093181827196842, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 3141965530998431083, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 2642136968281701136, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  level3Frames:
+  - {fileID: 3182886611960478157, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: -6223185962485605825, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: -3745107112386838319, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 4447035593182916001, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 6783941422347950672, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: -6427832472897292152, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 2448949394246379618, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - {fileID: 4109489943358021968, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  beakerFrameRate: 10
   onAccepted:
     m_PersistentCalls:
       m_Calls: []

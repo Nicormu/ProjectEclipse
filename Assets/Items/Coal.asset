@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Coal
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Coal
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: -228819513787663229, guid: c8f8239c9e84c07e7bf47c2f0f102adc, type: 3}
   description: A common fuel source valued for its steady heat output.
   stackable: 1
   maxStack: 99

@@ -4,11 +4,13 @@ using UnityEngine;
 public class InventorySlot
 {
     public ItemData Item { get; private set; }
-    public int Amount { get; set; } 
+    private int _amount;
+    /// <summary>Clamped to non-negative. Outside code may write freely — all writes are clamped.</summary>
+    public int Amount { get => _amount; set => _amount = Mathf.Max(0, value); }
 
     public InventorySlot(ItemData item, int amount)
     {
         this.Item = item;
-        this.Amount = amount;
+        this.Amount = Mathf.Max(0, amount);
     }
 }

@@ -31,14 +31,22 @@ public class NotebookDisplay : MonoBehaviour
     [SerializeField] private TabHoverEffect tasksTabHover;
 
     [Header("Pagination Buttons")]
-    [SerializeField] private GameObject nextButton; 
-    [SerializeField] private GameObject prevButton; 
-    
+    [SerializeField] private GameObject nextButton;
+    [SerializeField] private GameObject prevButton;
+
+    [Header("Tab Titles")]
+    [SerializeField] private string[] tabTitles = new[] { "INVENTORY", "RECIPES", "TASKS" };
+
     private int currentPage = 0;
+    private NotebookTab _lastActiveTab; // preserve the last active tab across OnEnable calls
 
     private void OnEnable()
     {
-        currentTab = NotebookTab.Inventory;
+        // Preserve the last active tab instead of forcing reset to Inventory.
+        // SetTabInstant is used when intentionally switching tabs; OnEnable fires
+        // when the panel becomes visible (often from closing/reopening).
+        if (currentTab == NotebookTab.Inventory && _lastActiveTab != NotebookTab.Inventory)
+            currentTab = _lastActiveTab;
         currentPage = 0;
         UpdateTabVisuals();
         UpdateDisplay();
@@ -54,8 +62,9 @@ public class NotebookDisplay : MonoBehaviour
 
     public void SetTabInstant(NotebookTab newTab)
     {
+        _lastActiveTab = currentTab; // remember before overwriting
         currentTab = newTab;
-        currentPage = 0; 
+        currentPage = 0;
         UpdateTabVisuals();
         UpdateDisplay();
     }
@@ -86,7 +95,7 @@ public class NotebookDisplay : MonoBehaviour
 
         if (currentTab == NotebookTab.Inventory)
         {
-            if (pageTitleText != null) pageTitleText.text = "INVENTORY";
+            if (pageTitleText != null && tabTitles.Length > 0) pageTitleText.text = tabTitles[0];
 
             if (inventoryManager != null)
             {
@@ -114,7 +123,7 @@ public class NotebookDisplay : MonoBehaviour
         }
         else if (currentTab == NotebookTab.Recipes)
         {
-            if (pageTitleText != null) pageTitleText.text = "RECIPES";
+            if (pageTitleText != null && tabTitles.Length > 1) pageTitleText.text = tabTitles[1];
 
             if (recipeManager != null && recipeSlotPrefab != null)
         {
@@ -140,7 +149,7 @@ public class NotebookDisplay : MonoBehaviour
     }   
         else if (currentTab == NotebookTab.Tasks)
         {
-            if (pageTitleText != null) pageTitleText.text = "TASKS";
+            if (pageTitleText != null && tabTitles.Length > 2) pageTitleText.text = tabTitles[2];
             listCount = 0; 
             CalculatePagination(listCount, out maxPages);
         }

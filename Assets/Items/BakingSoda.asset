@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52ddff029c54593d3834fcdd977bdf6d, type: 3}
   m_Name: BakingSoda
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: 
+  itemName: Baking Soda
   itemIcon: {fileID: 0}
-  description: 
+  description: A fine white powder known for its energetic reactions with certain
+    liquids.
   stackable: 1
   maxStack: 99
   canBuy: 1
-  buyPrice: 10
+  buyPrice: 6
   canSell: 1
-  sellPrice: 5
+  sellPrice: 3

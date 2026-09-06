@@ -7,11 +7,18 @@ public class ItemPickup : MonoBehaviour, InteractableUI
 
     public void Interact()
     {
+        if (item == null)
+        {
+            Debug.LogWarning($"ItemPickup on '{gameObject.name}' has no item assigned. Destroying.", this);
+            Destroy(gameObject);
+            return;
+        }
+
         InventoryManager inventory = FindAnyObjectByType<InventoryManager>();
-        
+
         if (inventory == null)
         {
-            Debug.LogError("InventoryManager not found.");
+            Debug.LogError("InventoryManager not found.", this);
             return;
         }
 
