@@ -1,23 +1,23 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Events;
 
-public class NotebookController : MonoBehaviour
+public class NotebookController : PanelBase
 {
-    /// <summary>Whether the notebook overlay is currently open. Polling this property is discouraged; use onNotebookOpened/onNotebookClosed events instead.</summary>
-    public static bool IsNotebookOpen { get; private set; }
+    public const int InventoryTabIndex = 0;
 
+    public static bool IsNotebookOpen { get; private set; }
     public static UnityEvent onNotebookOpened = new();
     public static UnityEvent onNotebookClosed = new();
 
     [Header("UI")]
-    [SerializeField] private RectTransform notebookPanel; 
+    [SerializeField] private RectTransform notebookPanel;
     [SerializeField] private NotebookDisplay notebookDisplay;
 
     [Header("Tab Buttons")]
-    [SerializeField] private UnityEngine.UI.Button inventoryTabButton;
-    [SerializeField] private UnityEngine.UI.Button recipesTabButton;
-    [SerializeField] private UnityEngine.UI.Button tasksTabButton;
+    [Tooltip("Order must match the tab list on NotebookDisplay.")]
+    [SerializeField] private List<UnityEngine.UI.Button> tabButtons = new();
 
     [Header("Positions")]
     [SerializeField] private Vector2 closedPosition;
@@ -25,45 +25,19 @@ public class NotebookController : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float animationTime = 0.25f;
+    [SerializeField] private KeyCode toggleKey = KeyCode.Tab;
 
-    [Header("Player")]
-    [SerializeField] private PlayerMovement playerMovement;
-
-    [Header("Overlay")]
-    [SerializeField] private OverlayCloseTrigger overlayClose;
-
-    private bool isOpen;
-    private bool isCraftingOpen; // tracks CraftingStation state via events
     private Coroutine moveRoutine;
-
-    private readonly KeyCode toggleKey = KeyCode.Tab;
 
     private void Start()
     {
-        if (inventoryTabButton != null)
-            inventoryTabButton.onClick.AddListener(() => OnTabButtonClicked(NotebookTab.Inventory));
-        
-        if (recipesTabButton != null)
-            recipesTabButton.onClick.AddListener(() => OnTabButtonClicked(NotebookTab.Recipes));
-
-        if (tasksTabButton != null)
-            tasksTabButton.onClick.AddListener(() => OnTabButtonClicked(NotebookTab.Tasks));
+        for (int i = 0; i < tabButtons.Count; i++)
+        {
+            int tabIndex = i; // capture for closure
+            if (tabButtons[i] != null)
+                tabButtons[i].onClick.AddListener(() => OnTabButtonClicked(tabIndex));
+        }
     }
-
-    private void OnEnable()
-    {
-        CraftingStation.onCraftingOpened.AddListener(OnCraftingOpened);
-        CraftingStation.onCraftingClosed.AddListener(OnCraftingClosed);
-    }
-
-    private void OnDisable()
-    {
-        CraftingStation.onCraftingOpened.RemoveListener(OnCraftingOpened);
-        CraftingStation.onCraftingClosed.RemoveListener(OnCraftingClosed);
-    }
-
-    private void OnCraftingOpened() => isCraftingOpen = true;
-    private void OnCraftingClosed() => isCraftingOpen = false;
 
     private void Update()
     {
@@ -77,80 +51,64 @@ public class NotebookController : MonoBehaviour
         }
     }
 
-    private void OnTabButtonClicked(NotebookTab clickedTab)
+    private void OnTabButtonClicked(int tabIndex)
     {
         if (!isOpen)
         {
-            notebookDisplay.SetTabInstant(clickedTab);
+            notebookDisplay.SetTabInstant(tabIndex);
             SetOpen(true);
         }
-        else if (isOpen && notebookDisplay.currentTab == clickedTab)
+        else if (notebookDisplay.CurrentTabIndex == tabIndex)
         {
             SetOpen(false);
         }
-        else if (isOpen && notebookDisplay.currentTab != clickedTab)
+        else
         {
             if (moveRoutine != null) StopCoroutine(moveRoutine);
-            moveRoutine = StartCoroutine(AnimateTabChange(clickedTab));
+            moveRoutine = StartCoroutine(AnimateTabChange(tabIndex));
         }
     }
 
-    public void OpenToTab(NotebookTab tab)
+    public void OpenToTab(int tabIndex)
     {
         if (!isOpen)
         {
-            notebookDisplay.SetTabInstant(tab);
+            notebookDisplay.SetTabInstant(tabIndex);
             SetOpen(true);
         }
-        else if (notebookDisplay.currentTab != tab)
+        else if (notebookDisplay.CurrentTabIndex != tabIndex)
         {
             if (moveRoutine != null) StopCoroutine(moveRoutine);
-            moveRoutine = StartCoroutine(AnimateTabChange(tab));
+            moveRoutine = StartCoroutine(AnimateTabChange(tabIndex));
         }
     }
 
-    public void CloseIfOpen()
-    {
-        if (isOpen)
-        {
-            SetOpen(false);
-        }
-    }
-
-    private IEnumerator AnimateTabChange(NotebookTab newTab)
+    private IEnumerator AnimateTabChange(int newTabIndex)
     {
         yield return StartCoroutine(MovePanelRoutine(closedPosition));
 
-        notebookDisplay.SetTabInstant(newTab);
+        notebookDisplay.SetTabInstant(newTabIndex);
 
         yield return StartCoroutine(MovePanelRoutine(openPosition));
 
         moveRoutine = null;
     }
 
-    public void SetOpen(bool shouldBeOpen)
+    protected override void SetOpen(bool shouldBeOpen)
     {
         if (isOpen == shouldBeOpen) return;
 
-        isOpen = shouldBeOpen;
+        base.SetOpen(shouldBeOpen);
         IsNotebookOpen = isOpen;
 
         if (isOpen)
         {
             onNotebookOpened?.Invoke();
-            overlayClose?.PanelOpened(); // count before branch — safe when nothing is actually open
             notebookDisplay.Refresh();
         }
         else
         {
             onNotebookClosed?.Invoke();
-            overlayClose?.PanelClosed();
-        }
-
-        if (playerMovement != null)
-        {
-            bool canPlayerMove = !isOpen && !isCraftingOpen;
-            playerMovement.SetMovementEnabled(canPlayerMove);
         }
 
         Vector2 target = isOpen ? openPosition : closedPosition;
@@ -167,7 +125,7 @@ public class NotebookController : MonoBehaviour
     {
         Vector2 start = notebookPanel.anchoredPosition;
         float t = 0f;
-        float rate = 1f / animationTime; 
+        float rate = 1f / animationTime;
 
         while (t < 1f)
         {

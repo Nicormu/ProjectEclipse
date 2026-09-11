@@ -14,6 +14,7 @@ public class InventoryManager : MonoBehaviour
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     private readonly List<InventorySlot> _inventory = new();

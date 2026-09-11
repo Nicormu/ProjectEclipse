@@ -14,15 +14,13 @@ public class ItemPickup : MonoBehaviour, InteractableUI
             return;
         }
 
-        InventoryManager inventory = FindAnyObjectByType<InventoryManager>();
-
-        if (inventory == null)
+        if (InventoryManager.Instance == null)
         {
             Debug.LogError("InventoryManager not found.", this);
             return;
         }
 
-        inventory.AddItem(item, amount);
+        InventoryManager.Instance.AddItem(item, amount);
 
         Destroy(gameObject);
     }

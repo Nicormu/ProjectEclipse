@@ -6,6 +6,7 @@ public class PlayerInteraction : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float interactionRadius = 2f;
     [SerializeField] private LayerMask interactableLayer;
+    [SerializeField] private KeyCode interactKey = KeyCode.E;
 
     [Header("Player UI")]
     [Tooltip("Drag the 'E' Canvas completely here")]
@@ -19,6 +20,8 @@ public class PlayerInteraction : MonoBehaviour
     private Collider2D[] _hitColliders;
     // Pre-computed layer bits that match the interactable layer mask (modern replacement for ContactFilter2D).
     private readonly HashSet<int> _interactableLayerBits = new();
+
+    private bool _anyPanelOpen;
 
     private void Start()
     {
@@ -40,31 +43,22 @@ public class PlayerInteraction : MonoBehaviour
 
     private void OnEnable()
     {
-        CraftingStation.onCraftingOpened.AddListener(OnCraftingOpened);
-        CraftingStation.onCraftingClosed.AddListener(OnCraftingClosed);
-        NotebookController.onNotebookOpened.AddListener(OnNotebookOpened);
-        NotebookController.onNotebookClosed.AddListener(OnNotebookClosed);
+        PanelManager.OnOpenPanelCountChanged += HandlePanelCountChanged;
     }
 
     private void OnDisable()
     {
-        CraftingStation.onCraftingOpened.RemoveListener(OnCraftingOpened);
-        CraftingStation.onCraftingClosed.RemoveListener(OnCraftingClosed);
-        NotebookController.onNotebookOpened.RemoveListener(OnNotebookOpened);
-        NotebookController.onNotebookClosed.RemoveListener(OnNotebookClosed);
+        PanelManager.OnOpenPanelCountChanged -= HandlePanelCountChanged;
     }
 
-    private bool _craftingOpen;
-    private bool _notebookOpen;
-
-    private void OnCraftingOpened() => _craftingOpen = true;
-    private void OnCraftingClosed() => _craftingOpen = false;
-    private void OnNotebookOpened() => _notebookOpen = true;
-    private void OnNotebookClosed() => _notebookOpen = false;
+    private void HandlePanelCountChanged(int openCount)
+    {
+        _anyPanelOpen = openCount > 0;
+    }
 
     private void Update()
     {
-        if (_notebookOpen || _craftingOpen)
+        if (_anyPanelOpen)
         {
             currentInteractable = null;
             UpdateUI();
@@ -74,7 +68,7 @@ public class PlayerInteraction : MonoBehaviour
         DetectInteractable();
         UpdateUI();
 
-        if (currentInteractable != null && Input.GetKeyDown(KeyCode.E))
+        if (currentInteractable != null && Input.GetKeyDown(interactKey))
         {
             currentInteractable.Interact();
         }

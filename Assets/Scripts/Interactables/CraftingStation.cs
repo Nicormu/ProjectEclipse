@@ -2,11 +2,9 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.Events;
 
-public class CraftingStation : MonoBehaviour, InteractableUI
+public class CraftingStation : PanelBase, InteractableUI
 {
-    /// <summary>Whether the crafting overlay is currently open. Polling this property is discouraged; use onCraftingOpened/onCraftingClosed events instead.</summary>
     public static bool IsCraftingOpen { get; private set; }
-
     public static UnityEvent onCraftingOpened = new();
     public static UnityEvent onCraftingClosed = new();
 
@@ -27,24 +25,19 @@ public class CraftingStation : MonoBehaviour, InteractableUI
 
     public RecipeData[] AvailableRecipes => availableRecipes;
 
-    [Header("Overlay")]
-    [SerializeField] private OverlayCloseTrigger overlayClose;
-
-    private bool isOpen;
     private bool isAnimating;
     private bool justOpened;
-    private bool isNotebookOpen; // tracks NotebookController state via events
 
-    private PlayerMovement playerMovement;
     private InventoryManager inventory;
     private RecipeManager recipeManager;
 
     private void Awake()
     {
-        playerMovement = FindAnyObjectByType<PlayerMovement>(); 
-        inventory = InventoryManager.Instance;
+        if (playerMovement == null)
+            playerMovement = FindAnyObjectByType<PlayerMovement>();
 
-        recipeManager = FindAnyObjectByType<RecipeManager>(); 
+        inventory = InventoryManager.Instance;
+        recipeManager = FindAnyObjectByType<RecipeManager>();
 
         if (notebookController == null)
             notebookController = FindAnyObjectByType<NotebookController>();
@@ -67,21 +60,6 @@ public class CraftingStation : MonoBehaviour, InteractableUI
         craftingCanvasGroup.gameObject.SetActive(false);
     }
 
-    private void OnEnable()
-    {
-        NotebookController.onNotebookOpened.AddListener(OnNotebookOpened);
-        NotebookController.onNotebookClosed.AddListener(OnNotebookClosed);
-    }
-
-    private void OnDisable()
-    {
-        NotebookController.onNotebookOpened.RemoveListener(OnNotebookOpened);
-        NotebookController.onNotebookClosed.RemoveListener(OnNotebookClosed);
-    }
-
-    private void OnNotebookOpened() => isNotebookOpen = true;
-    private void OnNotebookClosed() => isNotebookOpen = false;
-
     private void Update()
     {
         if (justOpened)
@@ -90,8 +68,6 @@ public class CraftingStation : MonoBehaviour, InteractableUI
             return;
         }
 
-        // Note: closeKey defaults to Escape in the inspector; Tab is not included
-        // to avoid conflicts with NotebookController's tab toggle.
         if (isOpen && !isAnimating && Input.GetKeyDown(closeKey))
         {
             StartCoroutine(FadeOut());
@@ -125,10 +101,7 @@ public class CraftingStation : MonoBehaviour, InteractableUI
 
         ConsumeIngredients(recipe);
 
-        inventory.AddItem(
-            recipe.result,
-            recipe.resultAmount
-        );
+        inventory.AddItem(recipe.result, recipe.resultAmount);
 
         Debug.Log($"Crafted {recipe.result.itemName} x{recipe.resultAmount}");
 
@@ -146,9 +119,7 @@ public class CraftingStation : MonoBehaviour, InteractableUI
     {
         foreach (Ingredient ingredient in recipe.ingredients)
         {
-            if (!inventory.HasItem(
-                    ingredient.item,
-                    ingredient.amount))
+            if (!inventory.HasItem(ingredient.item, ingredient.amount))
             {
                 return false;
             }
@@ -161,32 +132,24 @@ public class CraftingStation : MonoBehaviour, InteractableUI
     {
         foreach (Ingredient ingredient in recipe.ingredients)
         {
-            inventory.RemoveItem(
-                ingredient.item,
-                ingredient.amount);
+            inventory.RemoveItem(ingredient.item, ingredient.amount);
         }
     }
 
     private IEnumerator FadeIn()
     {
         isAnimating = true;
-        isOpen = true;
         justOpened = true;
 
+        base.SetOpen(true);
         IsCraftingOpen = true;
         onCraftingOpened?.Invoke();
-        overlayClose?.PanelOpened();
 
         craftingCanvasGroup.gameObject.SetActive(true);
 
-        if (playerMovement != null)
-        {
-            playerMovement.SetMovementEnabled(false);
-        }
-
         if (notebookController != null)
         {
-            notebookController.OpenToTab(NotebookTab.Inventory);
+            notebookController.OpenToTab(NotebookController.InventoryTabIndex);
         }
 
         if (beakerController != null)
@@ -202,8 +165,7 @@ public class CraftingStation : MonoBehaviour, InteractableUI
         {
             elapsed += Time.deltaTime;
 
-            craftingCanvasGroup.alpha =
-                Mathf.Lerp(0f, 1f, elapsed / fadeDuration);
+            craftingCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsed / fadeDuration);
 
             yield return null;
         }
@@ -218,8 +180,8 @@ public class CraftingStation : MonoBehaviour, InteractableUI
     private IEnumerator FadeOut()
     {
         isAnimating = true;
-        overlayClose?.PanelClosed();
 
+        base.SetOpen(false);
         IsCraftingOpen = false;
         onCraftingClosed?.Invoke();
 
@@ -228,7 +190,7 @@ public class CraftingStation : MonoBehaviour, InteractableUI
 
         if (notebookController != null)
         {
-            notebookController.CloseIfOpen();
+            notebookController.Close();
         }
 
         if (beakerController != null)
@@ -243,21 +205,13 @@ public class CraftingStation : MonoBehaviour, InteractableUI
         {
             elapsed += Time.deltaTime;
 
-            craftingCanvasGroup.alpha =
-                Mathf.Lerp(1f, 0f, elapsed / fadeDuration);
+            craftingCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsed / fadeDuration);
 
             yield return null;
         }
 
         craftingCanvasGroup.alpha = 0f;
         craftingCanvasGroup.gameObject.SetActive(false);
-
-        isOpen = false;
-
-        if (playerMovement != null && !isNotebookOpen)
-        {
-            playerMovement.SetMovementEnabled(true);
-        }
 
         isAnimating = false;
     }

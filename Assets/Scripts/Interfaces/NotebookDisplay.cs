@@ -1,52 +1,45 @@
 using UnityEngine;
-using System.Linq; 
 using System.Collections.Generic;
 using TMPro;
 
-public enum NotebookTab 
-{    
-    Inventory, 
-    Recipes,
-    Tasks 
-}
-
 public class NotebookDisplay : MonoBehaviour
 {
-    [Header("Notebook State")]
-    public NotebookTab currentTab = NotebookTab.Inventory;
+    [System.Serializable]
+    public class NotebookTabEntry
+    {
+        public string title;
+        public TabHoverEffect hoverEffect;
+        [Tooltip("Must implement INotebookTabContent. Leave empty for tabs with no list content (e.g. Tasks).")]
+        public MonoBehaviour contentProvider;
+
+        public INotebookTabContent Content => contentProvider as INotebookTabContent;
+    }
+
+    [Header("Tabs")]
+    [SerializeField] private List<NotebookTabEntry> tabs = new();
+    public int CurrentTabIndex { get; private set; }
+    public int TabCount => tabs.Count;
+
+    [Header("UI")]
     [SerializeField] private TextMeshProUGUI pageTitleText;
-    [SerializeField] private InventoryManager inventoryManager;
-    [SerializeField] private GameObject slotPrefab;
-    [SerializeField] private RecipeManager recipeManager;
-    [SerializeField] private GameObject recipeSlotPrefab;
     [SerializeField] private Transform contentPanel;
 
     [Header("Pagination Settings")]
     [SerializeField] private int itemsPerPage = 8;
-    [SerializeField] private TextMeshProUGUI pageNumberText; 
-
-    [Header("Tab Hover Effects")]
-    [SerializeField] private TabHoverEffect inventoryTabHover;
-    [SerializeField] private TabHoverEffect recipesTabHover;
-    [SerializeField] private TabHoverEffect tasksTabHover;
+    [SerializeField] private TextMeshProUGUI pageNumberText;
 
     [Header("Pagination Buttons")]
     [SerializeField] private GameObject nextButton;
     [SerializeField] private GameObject prevButton;
 
-    [Header("Tab Titles")]
-    [SerializeField] private string[] tabTitles = new[] { "INVENTORY", "RECIPES", "TASKS" };
-
     private int currentPage = 0;
-    private NotebookTab _lastActiveTab; // preserve the last active tab across OnEnable calls
+    private int _lastActiveTabIndex;
 
     private void OnEnable()
     {
-        // Preserve the last active tab instead of forcing reset to Inventory.
-        // SetTabInstant is used when intentionally switching tabs; OnEnable fires
-        // when the panel becomes visible (often from closing/reopening).
-        if (currentTab == NotebookTab.Inventory && _lastActiveTab != NotebookTab.Inventory)
-            currentTab = _lastActiveTab;
+        // Preserve the last active tab instead of forcing reset to index 0.
+        if (CurrentTabIndex == 0 && _lastActiveTabIndex != 0)
+            CurrentTabIndex = _lastActiveTabIndex;
         currentPage = 0;
         UpdateTabVisuals();
         UpdateDisplay();
@@ -60,10 +53,12 @@ public class NotebookDisplay : MonoBehaviour
         }
     }
 
-    public void SetTabInstant(NotebookTab newTab)
+    public void SetTabInstant(int tabIndex)
     {
-        _lastActiveTab = currentTab; // remember before overwriting
-        currentTab = newTab;
+        if (tabIndex < 0 || tabIndex >= tabs.Count) return;
+
+        _lastActiveTabIndex = CurrentTabIndex;
+        CurrentTabIndex = tabIndex;
         currentPage = 0;
         UpdateTabVisuals();
         UpdateDisplay();
@@ -71,87 +66,51 @@ public class NotebookDisplay : MonoBehaviour
 
     private void UpdateTabVisuals()
     {
-        if (inventoryTabHover != null) 
-            inventoryTabHover.SetSelected(currentTab == NotebookTab.Inventory);
-        
-        if (recipesTabHover != null) 
-            recipesTabHover.SetSelected(currentTab == NotebookTab.Recipes);
-            
-        if (tasksTabHover != null) 
-            tasksTabHover.SetSelected(currentTab == NotebookTab.Tasks);
+        for (int i = 0; i < tabs.Count; i++)
+        {
+            tabs[i].hoverEffect?.SetSelected(i == CurrentTabIndex);
+        }
     }
 
     private void UpdateDisplay()
     {
-        if (slotPrefab == null || contentPanel == null) return;
+        if (contentPanel == null || tabs.Count == 0 || CurrentTabIndex >= tabs.Count) return;
 
         foreach (Transform child in contentPanel)
         {
             Destroy(child.gameObject);
         }
 
-        int maxPages = 1;
-        int listCount = 0;
+        var tab = tabs[CurrentTabIndex];
 
-        if (currentTab == NotebookTab.Inventory)
+        if (pageTitleText != null)
+            pageTitleText.text = tab.title;
+
+        int maxPages;
+        var content = tab.Content;
+
+        if (content != null)
         {
-            if (pageTitleText != null && tabTitles.Length > 0) pageTitleText.text = tabTitles[0];
-
-            if (inventoryManager != null)
-            {
-                var inventory = inventoryManager.GetInventory();
-                var itemList = inventory.ToList();
-                listCount = itemList.Count;
-
-                CalculatePagination(listCount, out maxPages);
-
-                int startIndex = currentPage * itemsPerPage;
-                int endIndex = startIndex + itemsPerPage;
-
-                for (int i = startIndex; i < endIndex && i < itemList.Count; i++)
-                {
-                    var slot = itemList[i];
-                    if (slot.Item == null) continue; 
-
-                    GameObject newSlot = Instantiate(slotPrefab, contentPanel);
-                    if (newSlot.TryGetComponent<InventorySlotUI>(out var slotUI)) 
-                    {
-                        slotUI.Setup(slot.Item, slot.Amount);
-                    }
-                }
-            }
-        }
-        else if (currentTab == NotebookTab.Recipes)
-        {
-            if (pageTitleText != null && tabTitles.Length > 1) pageTitleText.text = tabTitles[1];
-
-            if (recipeManager != null && recipeSlotPrefab != null)
-        {
-            List<RecipeData> discoveredList = recipeManager.GetDiscoveredRecipes();
-            listCount = discoveredList.Count;
+            content.Refresh();
+            int listCount = content.ItemCount;
 
             CalculatePagination(listCount, out maxPages);
 
             int startIndex = currentPage * itemsPerPage;
             int endIndex = startIndex + itemsPerPage;
 
-            for (int i = startIndex; i < endIndex && i < discoveredList.Count; i++)
+            for (int i = startIndex; i < endIndex && i < listCount; i++)
             {
-                RecipeData recipe = discoveredList[i];
-
-                GameObject newSlot = Instantiate(recipeSlotPrefab, contentPanel);
-                if (newSlot.TryGetComponent<RecipeSlotUI>(out var recipeUI)) 
+                GameObject newSlot = Instantiate(content.SlotPrefab, contentPanel);
+                if (!content.PopulateSlot(i, newSlot))
                 {
-                    recipeUI.Setup(recipe); 
+                    Destroy(newSlot);
                 }
             }
         }
-    }   
-        else if (currentTab == NotebookTab.Tasks)
+        else
         {
-            if (pageTitleText != null && tabTitles.Length > 2) pageTitleText.text = tabTitles[2];
-            listCount = 0; 
-            CalculatePagination(listCount, out maxPages);
+            CalculatePagination(0, out maxPages);
         }
 
         UpdatePaginationUI(maxPages);
@@ -186,11 +145,11 @@ public class NotebookDisplay : MonoBehaviour
     {
         if (pageNumberText != null)
         {
-            int displayMaxPages = maxPages > 0 ? maxPages : 1; 
+            int displayMaxPages = maxPages > 0 ? maxPages : 1;
             pageNumberText.text = $"Page {currentPage + 1} / {displayMaxPages}";
         }
 
-        if (prevButton != null) prevButton.SetActive(currentPage > 0); 
-        if (nextButton != null) nextButton.SetActive(currentPage < maxPages - 1 && maxPages > 0); 
+        if (prevButton != null) prevButton.SetActive(currentPage > 0);
+        if (nextButton != null) nextButton.SetActive(currentPage < maxPages - 1 && maxPages > 0);
     }
 }

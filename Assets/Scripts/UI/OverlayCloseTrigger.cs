@@ -2,42 +2,38 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Spawns an invisible full-screen overlay on the root Canvas when any UI panel is open.
-/// Clicking on the overlay (i.e. outside all interactive elements) closes everything.
+/// Spawns an invisible full-screen overlay on the root Canvas whenever any registered
+/// panel is open (tracked via PanelManager). Clicking it closes every open panel.
 /// </summary>
 public class OverlayCloseTrigger : MonoBehaviour
 {
     [Header("Visual")]
     [SerializeField] private Color overlayColor = new Color(0f, 0f, 0f, 0.4f);
-
-    /// <summary>Explicitly assign the root Canvas in the inspector to avoid ambiguous FindResults.</summary>
     [SerializeField] private Canvas manualCanvas;
 
     private Image _overlayImage;
     private Canvas _rootCanvas;
     private bool _isActive;
-    private int _openPanelCount; // tracks how many panels (notebook + crafting) are open
 
-    /// <summary>Call when a panel opens. Closes everything on the first call if count goes 0→1.</summary>
-    public void PanelOpened()
-    {
-        _openPanelCount++;
-        EnsureOverlay();
-    }
-
-    /// <summary>Call when a panel closes. Disables overlay when count reaches 0.</summary>
-    public void PanelClosed()
-    {
-        _openPanelCount = Mathf.Max(0, _openPanelCount - 1);
-
-        if (_openPanelCount <= 0)
-        {
-            DisableOverlay();
-        }
-    }
-
-    /// <summary>Returns whether any panel is currently open (overlay active).</summary>
     public bool IsActive => _isActive;
+
+    private void OnEnable()
+    {
+        PanelManager.OnOpenPanelCountChanged += HandleOpenPanelCountChanged;
+    }
+
+    private void OnDisable()
+    {
+        PanelManager.OnOpenPanelCountChanged -= HandleOpenPanelCountChanged;
+    }
+
+    private void HandleOpenPanelCountChanged(int openCount)
+    {
+        if (openCount > 0)
+            EnsureOverlay();
+        else
+            DisableOverlay();
+    }
 
     private void EnsureOverlay()
     {
@@ -45,9 +41,8 @@ public class OverlayCloseTrigger : MonoBehaviour
 
         if (_rootCanvas == null)
         {
-            // Prefer the explicitly assigned canvas; fall back to FindObjectOfType as a last resort.
-            _rootCanvas = manualCanvas ?? Object.FindAnyObjectByType<Canvas>();
-            if (_rootCanvas == null) return; // no canvas in scene — fall back to manual behavior
+            _rootCanvas = manualCanvas != null ? manualCanvas : Object.FindAnyObjectByType<Canvas>();
+            if (_rootCanvas == null) return;
         }
 
         var overlayGO = new GameObject("OverlayCloseTarget", typeof(RectTransform), typeof(Image));
@@ -58,7 +53,6 @@ public class OverlayCloseTrigger : MonoBehaviour
         _overlayImage.color = overlayColor;
         _overlayImage.raycastTarget = true;
 
-        // Place behind all other UI elements by pushing it to the bottom of the render order.
         overlayGO.transform.SetAsFirstSibling();
 
         var rect = overlayGO.GetComponent<RectTransform>();
@@ -67,7 +61,6 @@ public class OverlayCloseTrigger : MonoBehaviour
         rect.offsetMin = Vector2.zero;
         rect.offsetMax = Vector2.zero;
 
-        // Listen for clicks on the overlay — this fires when user clicks "outside" all interactive elements.
         var button = overlayGO.AddComponent<Button>();
         button.onClick.AddListener(CloseAll);
 
@@ -88,20 +81,6 @@ public class OverlayCloseTrigger : MonoBehaviour
 
     private void CloseAll()
     {
-        // Close the notebook first so it doesn't steal focus back.
-        var notebook = Object.FindAnyObjectByType<NotebookController>();
-        if (notebook != null)
-        {
-            notebook.CloseIfOpen();
-        }
-
-        // Then close crafting.
-        var crafting = Object.FindAnyObjectByType<CraftingStation>();
-        if (crafting != null && crafting.gameObject.activeInHierarchy)
-        {
-            crafting.Interact(); // toggles off if open
-        }
-
-        DisableOverlay();
+        PanelManager.Instance?.CloseAll();
     }
 }
