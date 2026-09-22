@@ -23,6 +23,12 @@ public class CraftingBeakerController : MonoBehaviour
 
     public bool IsRecipeReady => currentRecipe != null && totalFilledVolume >= totalRequiredVolume && totalRequiredVolume > 0;
 
+    public void SetCraftingStation(CraftingStation station)
+    {
+        if (station != null)
+            craftingStation = station;
+    }
+
     public void LoadRecipe(RecipeData recipe)
     {
         ClearSlots();
@@ -57,45 +63,38 @@ public class CraftingBeakerController : MonoBehaviour
     /// cannot be used elsewhere until finalized or released.
     /// </summary>
     public bool RequestFill(IngredientSlotUI slot, int draggedAmount)
+{
+    if (slot == null || slot.RequiredItem == null) return false;
+    if (slot.IsFull || currentRecipe == null) return false;
+
+    if (InventoryManager.Instance == null)
     {
-        if (slot == null || slot.RequiredItem == null) return false;
-        if (slot.IsFull || currentRecipe == null) return false;
-
-        if (InventoryManager.Instance == null)
-        {
-            Debug.LogError("InventoryManager not found in scene.", this);
-            return false;
-        }
-
-        int spaceLeft = slot.RequiredAmount - slot.FilledAmount;
-        int amountToAdd = Mathf.Min(draggedAmount, spaceLeft);
-        if (amountToAdd <= 0) return false;
-
-        int excess = draggedAmount - amountToAdd;
-
-        // Remove all dragged items from inventory (they move into the beaker system)
-        InventoryManager.Instance.RemoveItem(slot.RequiredItem, draggedAmount);
-        // Commit only what was actually filled (tracked toward recipe completion)
-        InventoryManager.Instance.CommitItem(slot.RequiredItem, amountToAdd);
-
-        // Update slot visual state
-        slot.AddFilled(amountToAdd);
-
-        // Return excess items to inventory
-        if (excess > 0)
-            InventoryManager.Instance.AddItem(slot.RequiredItem, excess);
-
-        // Update global beaker volume tracking
-        totalFilledVolume += amountToAdd;
-
-        // Smoothly update the main beaker visual
-        beakerVisual?.SetFill(FillRatio);
-
-        if (IsRecipeReady)
-            onRecipeReady?.Invoke();
-
-        return true;
+        Debug.LogError("InventoryManager not found in scene.", this);
+        return false;
     }
+
+    int spaceLeft = slot.RequiredAmount - slot.FilledAmount;
+    int amountToAdd = Mathf.Min(draggedAmount, spaceLeft);
+    if (amountToAdd <= 0) return false;
+
+    // Reserve the item without removing it from inventory yet — Craft() removes
+    // it for real once the player confirms the craft.
+    InventoryManager.Instance.CommitItem(slot.RequiredItem, amountToAdd);
+
+    // Update slot visual state
+    slot.AddFilled(amountToAdd);
+
+    // Update global beaker volume tracking
+    totalFilledVolume += amountToAdd;
+
+    // Smoothly update the main beaker visual
+    beakerVisual?.SetFill(FillRatio);
+
+    if (IsRecipeReady)
+        onRecipeReady?.Invoke();
+
+    return true;
+}
 
     /// <summary>
     /// Called when crafting starts — consumes remaining uncommitted ingredients from inventory.
@@ -104,34 +103,21 @@ public class CraftingBeakerController : MonoBehaviour
     /// excess committed amounts are implicitly released via ClearCommittedItems.
     /// </summary>
     public bool FinalizeCraft()
+{
+    if (currentRecipe == null) return false;
+
+    if (InventoryManager.Instance == null)
     {
-        if (currentRecipe == null) return false;
-
-        if (InventoryManager.Instance == null)
-        {
-            Debug.LogError("InventoryManager not found in scene.", this);
-            return false;
-        }
-
-        foreach (Ingredient ingredient in currentRecipe.ingredients)
-        {
-            // Amount already in beaker slots for this ingredient type
-            int inBeaker = 0;
-            foreach (var slot in activeSlots)
-                if (slot.RequiredItem == ingredient.item)
-                    inBeaker += slot.FilledAmount;
-
-            // Remove only the portion not yet in any beaker slot
-            int neededFromInventory = Mathf.Max(0, ingredient.amount - inBeaker);
-            if (neededFromInventory > 0)
-                InventoryManager.Instance.RemoveItem(ingredient.item, neededFromInventory);
-        }
-
-        // Commit items are released (items in beaker slots become part of the craft result)
-        InventoryManager.Instance.ClearCommittedItems();
-
-        return true;
+        Debug.LogError("InventoryManager not found in scene.", this);
+        return false;
     }
+
+    // Ingredients are still physically in inventory — RequestFill only reserved them.
+    // CraftingStation.Craft() does the actual removal.
+    InventoryManager.Instance.ClearCommittedItems();
+
+    return true;
+}
 
     /// <summary>
     /// Called when crafting is cancelled — returns all beaker items back to inventory.
@@ -149,6 +135,7 @@ public class CraftingBeakerController : MonoBehaviour
             if (slot.FilledAmount > 0)
             {
                 InventoryManager.Instance.ReleaseItem(slot.RequiredItem, slot.FilledAmount);
+                InventoryManager.Instance.AddItem(slot.RequiredItem, slot.FilledAmount);
             }
             slot.ResetSlot();
         }
@@ -163,14 +150,14 @@ public class CraftingBeakerController : MonoBehaviour
 
     public void Craft()
     {
-        if (currentRecipe == null || craftingStation == null) return;
+        if (currentRecipe == null || craftingStation == null || !IsRecipeReady) return;
 
         // Consume remaining uncommitted ingredients from inventory.
         // CanCraft was verified before this call, so sufficient items exist.
-        FinalizeCraft();
+        if (!FinalizeCraft()) return;
 
         // Add result to inventory and discover recipe
-        craftingStation.Craft(currentRecipe);
+        craftingStation.CompleteCraft(currentRecipe);
 
         // Reset slots and visual
         foreach (var slot in activeSlots)
@@ -188,7 +175,10 @@ public class CraftingBeakerController : MonoBehaviour
         foreach (var slot in activeSlots)
         {
             if (slot.FilledAmount > 0 && InventoryManager.Instance != null)
+            {
                 InventoryManager.Instance.ReleaseItem(slot.RequiredItem, slot.FilledAmount);
+                InventoryManager.Instance.AddItem(slot.RequiredItem, slot.FilledAmount);
+            }
         }
 
         if (InventoryManager.Instance != null)

@@ -27,8 +27,8 @@ public class PlayerMovement : MonoBehaviour
         transform.Translate(moveSpeed * Time.fixedDeltaTime * movement);
     }
 
-    public void SetMovementEnabled(bool enabled)
+    public void SetMovementEnabled(bool canMoveNow)
     {
-        canMove = enabled;
+        canMove = canMoveNow;
     }
 }

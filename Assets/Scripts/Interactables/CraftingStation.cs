@@ -44,10 +44,16 @@ public class CraftingStation : PanelBase, InteractableUI
 
         if (beakerController == null)
             beakerController = FindAnyObjectByType<CraftingBeakerController>();
+
+        beakerController?.SetCraftingStation(this);
     }
 
     private void Start()
     {
+        // Awake order between scene objects is not guaranteed.
+        inventory ??= InventoryManager.Instance;
+        recipeManager ??= FindAnyObjectByType<RecipeManager>();
+
         if (craftingCanvasGroup == null)
         {
             Debug.LogError("Crafting Canvas Group is not assigned in the inspector!", this);
@@ -100,19 +106,29 @@ public class CraftingStation : PanelBase, InteractableUI
         }
 
         ConsumeIngredients(recipe);
+        CompleteCraft(recipe);
+    }
+
+    /// <summary>Adds the result after a CraftingBeakerController has already consumed ingredients.</summary>
+    public void CompleteCraft(RecipeData recipe)
+    {
+        inventory ??= InventoryManager.Instance;
+        if (recipe == null || recipe.result == null || inventory == null) return;
 
         inventory.AddItem(recipe.result, recipe.resultAmount);
-
         Debug.Log($"Crafted {recipe.result.itemName} x{recipe.resultAmount}");
 
         if (recipeManager != null)
-        {
             recipeManager.DiscoverRecipe(recipe);
-        }
         else
-        {
             Debug.LogWarning("RecipeManager not found in scene. Recipe could not be discovered.");
-        }
+    }
+
+    /// <summary>Loads a configured recipe into the beaker UI.</summary>
+    public void SelectRecipe(RecipeData recipe)
+    {
+        if (recipe == null || beakerController == null) return;
+        beakerController.LoadRecipe(recipe);
     }
 
     private bool CanCraft(RecipeData recipe)
@@ -155,8 +171,12 @@ public class CraftingStation : PanelBase, InteractableUI
         if (beakerController != null)
         {
 #if UNITY_EDITOR
-            beakerController.LoadRecipe(testRecipe);
+            if (testRecipe != null)
+                SelectRecipe(testRecipe);
+            else
 #endif
+            if (availableRecipes != null && availableRecipes.Length > 0)
+                SelectRecipe(availableRecipes[0]);
         }
 
         float elapsed = 0f;

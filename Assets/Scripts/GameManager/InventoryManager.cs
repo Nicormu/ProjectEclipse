@@ -83,13 +83,13 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    // Track items that are committed to beaker slots (not yet crafted).
-    // HasItem includes these so they can't be used elsewhere.
+    // Track items that are committed to beaker slots (not yet crafted). They have already
+    // been removed from _inventory, so this dictionary is only used to restore on cancel.
     private readonly Dictionary<ItemData, int> _committedItems = new();
 
     /// <summary>
     /// Track that an item has been placed into a beaker slot (counted toward crafting).
-    /// Does NOT remove from inventory — FinalizeCraft handles inventory deduction after verification.
+    /// The caller must remove the item from inventory before committing it.
     /// </summary>
     public void CommitItem(ItemData item, int amount)
     {
@@ -118,16 +118,12 @@ public class InventoryManager : MonoBehaviour
     {
         if (!ValidateItem(item, amount)) return false;
 
-        // Count only uncommitted items: committed items have been moved to a beaker slot
-        // and are tracked separately via _committedItems. Subtracting them ensures we report
-        // only the quantity available for other uses.
         int totalOwned = 0;
         foreach (var slot in _inventory)
         {
             if (slot.Item == item) totalOwned += slot.Amount;
         }
-        int committed = _committedItems.GetValueOrDefault(item, 0);
-        return Math.Max(0, totalOwned - committed) >= amount;
+        return totalOwned >= amount;
     }
 
     public void ClearCommittedItems()

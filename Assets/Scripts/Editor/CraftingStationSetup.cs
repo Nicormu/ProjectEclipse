@@ -18,15 +18,18 @@ public static class CraftingStationSetup
             return;
         }
 
-        // Create a parent group for all crafting-related objects
-        var go = new GameObject("CraftingStation", typeof(CanvasGroup), typeof(CraftingStation));
+        // Parent holds the script and must stay active so Interact()/Update() keep working
+        // even while the visible panel is faded out/hidden.
+        var go = new GameObject("CraftingStation", typeof(CraftingStation));
         var cs = go.GetComponent<CraftingStation>();
 
-        // notebookController, beakerController and craftingCanvasGroup are private [SerializeField]
-        // fields on CraftingStation, so they're set through SerializedObject instead of direct access.
+        // Separate child holds the CanvasGroup that actually gets shown/hidden.
+        var canvasGO = new GameObject("CraftingCanvas", typeof(CanvasGroup));
+        canvasGO.transform.SetParent(go.transform, false);
+
         var so = new SerializedObject(cs);
 
-        so.FindProperty("craftingCanvasGroup").objectReferenceValue = go.GetComponent<CanvasGroup>();
+        so.FindProperty("craftingCanvasGroup").objectReferenceValue = canvasGO.GetComponent<CanvasGroup>();
         so.FindProperty("notebookController").objectReferenceValue = Object.FindAnyObjectByType<NotebookController>();
 
         var beakerCtrl = Object.FindAnyObjectByType<CraftingBeakerController>();

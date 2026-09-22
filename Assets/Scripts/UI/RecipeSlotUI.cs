@@ -1,8 +1,9 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.EventSystems;
 using System.Text;
 
-public class RecipeSlotUI : MonoBehaviour
+public class RecipeSlotUI : MonoBehaviour, IPointerClickHandler
 {
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI recipeFormulaText; // Single text element for the whole line
@@ -11,9 +12,13 @@ public class RecipeSlotUI : MonoBehaviour
     [SerializeField] private string ingredientSeparator = " + ";
     [SerializeField] private string resultSeparator = " -> ";
 
+    private RecipeData recipe;
+
     public void Setup(RecipeData recipe)
     {
         if (recipe == null || recipe.result == null || recipe.ingredients == null) return;
+
+        this.recipe = recipe;
 
         StringBuilder formula = new();
 
@@ -36,5 +41,13 @@ public class RecipeSlotUI : MonoBehaviour
         {
             recipeFormulaText.text = formula.ToString();
         }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left || recipe == null) return;
+
+        var station = FindAnyObjectByType<CraftingStation>();
+        station?.SelectRecipe(recipe);
     }
 }

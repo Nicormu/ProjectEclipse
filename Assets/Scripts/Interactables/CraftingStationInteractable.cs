@@ -14,7 +14,7 @@ public class CraftingStationInteractable : MonoBehaviour, InteractableUI
     {
         if (craftingStation == null)
         {
-            Debug.LogError("CraftingStationInteractable: no CraftingStation asignado ni encontrado en la escena.", this);
+            Debug.LogError("CraftingStationInteractable: no CraftingStation assigned or found in the scene.", this);
             return;
         }
 
