@@ -9,7 +9,7 @@ public static class InventoryManagerInspector
     [MenuItem("GameObject/Game Manager/Inventory Manager", false, 1)]
     private static void AddInventoryManagerToScene()
     {
-        var existing = GameObject.FindObjectOfType<InventoryManager>();
+        var existing = GameObject.FindAnyObjectByType<InventoryManager>();
         if (existing != null)
         {
             Debug.LogWarning("An InventoryManager already exists in the scene.", existing.gameObject);
@@ -25,6 +25,6 @@ public static class InventoryManagerInspector
     [MenuItem("GameObject/Game Manager/Inventory Manager", true)]
     private static bool ValidateInventoryManagerMenu()
     {
-        return GameObject.FindObjectOfType<InventoryManager>() == null;
+        return GameObject.FindAnyObjectByType<InventoryManager>() == null;
     }
 }

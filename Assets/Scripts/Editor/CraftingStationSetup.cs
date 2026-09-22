@@ -11,7 +11,7 @@ public static class CraftingStationSetup
     [MenuItem("GameObject/UI/Crafting Station", false, 2)]
     private static void AddCraftingStationToScene()
     {
-        var existing = GameObject.FindObjectOfType<CraftingStation>();
+        var existing = GameObject.FindAnyObjectByType<CraftingStation>();
         if (existing != null)
         {
             Debug.LogWarning("A CraftingStation already exists in the scene.", existing.gameObject);
@@ -22,11 +22,18 @@ public static class CraftingStationSetup
         var go = new GameObject("CraftingStation", typeof(CanvasGroup), typeof(CraftingStation));
         var cs = go.GetComponent<CraftingStation>();
 
-        // Auto-find managers if they exist in the scene
-        cs.notebookController = Object.FindObjectOfType<NotebookController>();
-        var beakerCtrl = Object.FindObjectOfType<CraftingBeakerController>();
+        // notebookController, beakerController and craftingCanvasGroup are private [SerializeField]
+        // fields on CraftingStation, so they're set through SerializedObject instead of direct access.
+        var so = new SerializedObject(cs);
+
+        so.FindProperty("craftingCanvasGroup").objectReferenceValue = go.GetComponent<CanvasGroup>();
+        so.FindProperty("notebookController").objectReferenceValue = Object.FindAnyObjectByType<NotebookController>();
+
+        var beakerCtrl = Object.FindAnyObjectByType<CraftingBeakerController>();
         if (beakerCtrl != null)
-            cs.beakerController = beakerCtrl;
+            so.FindProperty("beakerController").objectReferenceValue = beakerCtrl;
+
+        so.ApplyModifiedProperties();
 
         Undo.RegisterCreatedObjectUndo(go, "Add Crafting Station");
         Selection.activeGameObject = go;
@@ -35,6 +42,6 @@ public static class CraftingStationSetup
     [MenuItem("GameObject/UI/Crafting Station", true)]
     private static bool ValidateCraftingStationMenu()
     {
-        return GameObject.FindObjectOfType<CraftingStation>() == null;
+        return GameObject.FindAnyObjectByType<CraftingStation>() == null;
     }
 }

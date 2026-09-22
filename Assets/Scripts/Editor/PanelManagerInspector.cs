@@ -10,7 +10,7 @@ public static class PanelManagerInspector
     [MenuItem("GameObject/UI/Panel Manager", false, 1)]
     private static void AddPanelManagerToScene()
     {
-        var existing = GameObject.FindObjectOfType<PanelManager>();
+        var existing = GameObject.FindAnyObjectByType<PanelManager>();
         if (existing != null)
         {
             Debug.LogWarning("A PanelManager already exists in the scene.", existing.gameObject);
@@ -26,6 +26,6 @@ public static class PanelManagerInspector
     [MenuItem("GameObject/UI/Panel Manager", true)]
     private static bool ValidatePanelManagerMenu()
     {
-        return GameObject.FindObjectOfType<PanelManager>() == null;
+        return GameObject.FindAnyObjectByType<PanelManager>() == null;
     }
 }
