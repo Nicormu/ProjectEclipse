@@ -91,25 +91,31 @@ public class CraftingStation : PanelBase, InteractableUI
             StartCoroutine(FadeIn());
     }
 
-    public void Craft(RecipeData recipe)
+    /// <summary>
+    /// Attempts a complete craft directly from inventory. This is useful for
+    /// non-beaker stations and guarantees that a result is never granted unless
+    /// every ingredient was consumed.
+    /// </summary>
+    public bool TryCraft(RecipeData recipe)
     {
-        if (inventory == null)
+        inventory ??= InventoryManager.Instance;
+        if (inventory == null || !TryConsumeIngredients(recipe))
         {
-            Debug.LogError("InventoryManager not found.");
-            return;
+            Debug.Log("Missing or invalid ingredients.");
+            return false;
         }
 
-        if (!CanCraft(recipe))
-        {
-            Debug.Log("Missing ingredients.");
-            return;
-        }
-
-        ConsumeIngredients(recipe);
         CompleteCraft(recipe);
+        return true;
     }
 
-    /// <summary>Adds the result after a CraftingBeakerController has already consumed ingredients.</summary>
+    // Kept for existing UnityEvents and any existing callers.
+    public void Craft(RecipeData recipe) => TryCraft(recipe);
+
+    /// <summary>
+    /// Adds the result after CraftingBeakerController has already transferred every
+    /// ingredient out of inventory. Do not use this as a general crafting entry point.
+    /// </summary>
     public void CompleteCraft(RecipeData recipe)
     {
         inventory ??= InventoryManager.Instance;
@@ -131,25 +137,34 @@ public class CraftingStation : PanelBase, InteractableUI
         beakerController.LoadRecipe(recipe);
     }
 
-    private bool CanCraft(RecipeData recipe)
+    private bool TryConsumeIngredients(RecipeData recipe)
     {
+        if (recipe == null || recipe.result == null || recipe.resultAmount < 1 ||
+            recipe.ingredients == null || recipe.ingredients.Length == 0)
+            return false;
+
+        // Aggregate first: a malformed recipe may contain the same item twice.
+        // Checking each entry independently would allow a partial deduction.
+        var totals = new System.Collections.Generic.Dictionary<ItemData, int>();
         foreach (Ingredient ingredient in recipe.ingredients)
         {
-            if (!inventory.HasItem(ingredient.item, ingredient.amount))
-            {
+            if (ingredient == null || ingredient.item == null || ingredient.amount < 1)
                 return false;
-            }
+
+            totals[ingredient.item] = totals.TryGetValue(ingredient.item, out int amount)
+                ? amount + ingredient.amount
+                : ingredient.amount;
         }
+
+        foreach (var requirement in totals)
+            if (!inventory.HasItem(requirement.Key, requirement.Value))
+                return false;
+
+        foreach (var requirement in totals)
+            if (!inventory.RemoveItem(requirement.Key, requirement.Value))
+                return false;
 
         return true;
-    }
-
-    private void ConsumeIngredients(RecipeData recipe)
-    {
-        foreach (Ingredient ingredient in recipe.ingredients)
-        {
-            inventory.RemoveItem(ingredient.item, ingredient.amount);
-        }
     }
 
     private IEnumerator FadeIn()

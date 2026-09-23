@@ -85,8 +85,9 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         isDragging = true;
         canvasGroup.alpha = 0.5f;
 
-        // Delay blocking raycasts slightly to ensure the drag icon spawns correctly
-        StartCoroutine(DelayRaycastBlock());
+        // The source must stop receiving raycasts immediately so the target can
+        // receive the drop even during a short, fast drag.
+        canvasGroup.blocksRaycasts = false;
 
         // Always use Item.itemIcon for the ghost — independent of whether iconImage is visible/enabled
         if (Item != null && Item.itemIcon != null)
@@ -105,12 +106,6 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
             UpdateDragIconPosition(eventData);
         }
-    }
-
-    private System.Collections.IEnumerator DelayRaycastBlock()
-    {
-        yield return null; // Wait one frame to ensure pointer position is registered
-        canvasGroup.blocksRaycasts = false;
     }
 
     public void OnDrag(PointerEventData eventData)

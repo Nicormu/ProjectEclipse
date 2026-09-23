@@ -2,16 +2,20 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// Attach to any child of an InventorySlotUI (text, image, etc.) so that clicking it
-/// initiates a drag. Unity's event system routes pointer events only to the first raycast hit,
-/// so without this on children, clicks on text never reach the slot's root handler.
+/// Attach to a raycastable child of an InventorySlotUI (text, image, etc.). Unity routes
+/// the drag lifecycle to the first raycast hit, so this forwards that lifecycle to the
+/// owning inventory slot without turning ordinary clicks into drag attempts.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
-public class SlotDragSource : MonoBehaviour, IPointerDownHandler
+public class SlotDragSource : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnBeginDrag(PointerEventData eventData)
     {
         var slot = GetComponentInParent<InventorySlotUI>();
-        slot?.StartDrag();
+        slot?.OnBeginDrag(eventData);
     }
+
+    public void OnDrag(PointerEventData eventData) => GetComponentInParent<InventorySlotUI>()?.OnDrag(eventData);
+
+    public void OnEndDrag(PointerEventData eventData) => GetComponentInParent<InventorySlotUI>()?.OnEndDrag(eventData);
 }

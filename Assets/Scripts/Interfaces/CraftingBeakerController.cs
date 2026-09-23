@@ -57,10 +57,9 @@ public class CraftingBeakerController : MonoBehaviour
 
     /// <summary>
     /// Called by IngredientSlotUI when a valid item is dropped.
-    /// Commits inventory, updates beaker visuals, returns true if slot was filled.
-    /// Excess items (dragged beyond spaceLeft) are automatically returned to inventory.
-    /// Items are consumed from inventory immediately and tracked via CommitItem so they
-    /// cannot be used elsewhere until finalized or released.
+    /// Transfers as much as the slot can accept from inventory into the beaker.
+    /// The beaker is the sole source of truth for transferred ingredients: cancelling
+    /// restores them and completing the craft consumes them permanently.
     /// </summary>
     public bool RequestFill(IngredientSlotUI slot, int draggedAmount)
 {
@@ -77,9 +76,8 @@ public class CraftingBeakerController : MonoBehaviour
     int amountToAdd = Mathf.Min(draggedAmount, spaceLeft);
     if (amountToAdd <= 0) return false;
 
-    // Reserve the item without removing it from inventory yet — Craft() removes
-    // it for real once the player confirms the craft.
-    InventoryManager.Instance.CommitItem(slot.RequiredItem, amountToAdd);
+    if (!InventoryManager.Instance.RemoveItem(slot.RequiredItem, amountToAdd))
+        return false;
 
     // Update slot visual state
     slot.AddFilled(amountToAdd);
@@ -92,29 +90,6 @@ public class CraftingBeakerController : MonoBehaviour
 
     if (IsRecipeReady)
         onRecipeReady?.Invoke();
-
-    return true;
-}
-
-    /// <summary>
-    /// Called when crafting starts — consumes remaining uncommitted ingredients from inventory.
-    /// CanCraft was already verified (via corrected HasItem), so this always succeeds.
-    /// Committed items tracked in InventoryManager represent what's in beaker slots;
-    /// excess committed amounts are implicitly released via ClearCommittedItems.
-    /// </summary>
-    public bool FinalizeCraft()
-{
-    if (currentRecipe == null) return false;
-
-    if (InventoryManager.Instance == null)
-    {
-        Debug.LogError("InventoryManager not found in scene.", this);
-        return false;
-    }
-
-    // Ingredients are still physically in inventory — RequestFill only reserved them.
-    // CraftingStation.Craft() does the actual removal.
-    InventoryManager.Instance.ClearCommittedItems();
 
     return true;
 }
@@ -134,13 +109,11 @@ public class CraftingBeakerController : MonoBehaviour
         {
             if (slot.FilledAmount > 0)
             {
-                InventoryManager.Instance.ReleaseItem(slot.RequiredItem, slot.FilledAmount);
                 InventoryManager.Instance.AddItem(slot.RequiredItem, slot.FilledAmount);
             }
             slot.ResetSlot();
         }
 
-        InventoryManager.Instance.ClearCommittedItems();
         totalFilledVolume = 0;
 
         // Reset beaker visual so the fill animation doesn't drift toward a stale target after cancel
@@ -150,14 +123,30 @@ public class CraftingBeakerController : MonoBehaviour
 
     public void Craft()
     {
-        if (currentRecipe == null || craftingStation == null || !IsRecipeReady) return;
+        if (currentRecipe == null || craftingStation == null) return;
 
-        // Consume remaining uncommitted ingredients from inventory.
-        // CanCraft was verified before this call, so sufficient items exist.
-        if (!FinalizeCraft()) return;
-
-        // Add result to inventory and discover recipe
-        craftingStation.CompleteCraft(currentRecipe);
+        if (IsRecipeReady)
+        {
+            // RequestFill has already transferred every required item from inventory.
+            craftingStation.CompleteCraft(currentRecipe);
+        }
+        else if (totalFilledVolume == 0)
+        {
+            // The Craft button also supports the simpler recipe -> craft flow.
+            // Do not use it after manual filling has begun: those ingredients are
+            // already in the beaker and must be completed or returned on cancel.
+            if (!craftingStation.TryCraft(currentRecipe))
+            {
+                onRecipeNotReady?.Invoke();
+                return;
+            }
+        }
+        else
+        {
+            Debug.Log("Finish filling the beaker or cancel the current mixture.", this);
+            onRecipeNotReady?.Invoke();
+            return;
+        }
 
         // Reset slots and visual
         foreach (var slot in activeSlots)
@@ -176,13 +165,9 @@ public class CraftingBeakerController : MonoBehaviour
         {
             if (slot.FilledAmount > 0 && InventoryManager.Instance != null)
             {
-                InventoryManager.Instance.ReleaseItem(slot.RequiredItem, slot.FilledAmount);
                 InventoryManager.Instance.AddItem(slot.RequiredItem, slot.FilledAmount);
             }
         }
-
-        if (InventoryManager.Instance != null)
-            InventoryManager.Instance.ClearCommittedItems();
 
         foreach (var slot in activeSlots)
             if (slot != null && slot.gameObject != null) Destroy(slot.gameObject);

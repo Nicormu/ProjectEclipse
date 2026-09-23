@@ -28,15 +28,48 @@ public class NotebookController : PanelBase
     [SerializeField] private KeyCode toggleKey = KeyCode.Tab;
 
     private Coroutine moveRoutine;
+    private Coroutine inventoryRefreshRoutine;
+    private InventoryManager subscribedInventory;
 
     private void Start()
     {
+        SubscribeToInventory();
+
         for (int i = 0; i < tabButtons.Count; i++)
         {
             int tabIndex = i; // capture for closure
             if (tabButtons[i] != null)
                 tabButtons[i].onClick.AddListener(() => OnTabButtonClicked(tabIndex));
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (subscribedInventory != null)
+            subscribedInventory.InventoryChanged -= RefreshAfterInventoryChange;
+    }
+
+    private void SubscribeToInventory()
+    {
+        if (subscribedInventory != null) return;
+
+        subscribedInventory = InventoryManager.Instance;
+        if (subscribedInventory != null)
+            subscribedInventory.InventoryChanged += RefreshAfterInventoryChange;
+    }
+
+    private void RefreshAfterInventoryChange()
+    {
+        if (!isOpen || notebookDisplay == null || inventoryRefreshRoutine != null) return;
+        inventoryRefreshRoutine = StartCoroutine(RefreshAtEndOfFrame());
+    }
+
+    // Waiting prevents destroying the source slot while its drop handler is still running.
+    private IEnumerator RefreshAtEndOfFrame()
+    {
+        yield return new WaitForEndOfFrame();
+        notebookDisplay.Refresh();
+        inventoryRefreshRoutine = null;
     }
 
     private void Update()

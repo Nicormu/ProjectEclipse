@@ -12,13 +12,24 @@ public class RecipeSlotUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private string ingredientSeparator = " + ";
     [SerializeField] private string resultSeparator = " -> ";
 
+    [Header("Selection")]
+    [SerializeField] private Color selectedColor = new(1f, 0.86f, 0.38f, 1f);
+
     private RecipeData recipe;
+    private Color defaultColor = Color.white;
+    private static RecipeSlotUI selectedSlot;
 
     public void Setup(RecipeData recipe)
     {
         if (recipe == null || recipe.result == null || recipe.ingredients == null) return;
 
         this.recipe = recipe;
+
+        if (recipeFormulaText != null)
+        {
+            defaultColor = recipeFormulaText.color;
+            recipeFormulaText.color = selectedSlot == this ? selectedColor : defaultColor;
+        }
 
         StringBuilder formula = new();
 
@@ -48,6 +59,23 @@ public class RecipeSlotUI : MonoBehaviour, IPointerClickHandler
         if (eventData.button != PointerEventData.InputButton.Left || recipe == null) return;
 
         var station = FindAnyObjectByType<CraftingStation>();
-        station?.SelectRecipe(recipe);
+        if (station == null) return;
+
+        selectedSlot?.SetSelected(false);
+        selectedSlot = this;
+        SetSelected(true);
+        station.SelectRecipe(recipe);
+    }
+
+    private void OnDisable()
+    {
+        if (selectedSlot == this)
+            selectedSlot = null;
+    }
+
+    private void SetSelected(bool isSelected)
+    {
+        if (recipeFormulaText != null)
+            recipeFormulaText.color = isSelected ? selectedColor : defaultColor;
     }
 }

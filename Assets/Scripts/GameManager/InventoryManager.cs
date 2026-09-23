@@ -5,6 +5,7 @@ using System;
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager Instance { get; private set; }
+    public event Action InventoryChanged;
 
     private void Awake()
     {
@@ -19,14 +20,19 @@ public class InventoryManager : MonoBehaviour
 
     private readonly List<InventorySlot> _inventory = new();
 
-    public void RemoveItem(ItemData item, int amount)
+    /// <summary>
+    /// Removes an exact amount only when the inventory owns all of it.
+    /// Returning the result lets transactional systems, such as crafting, avoid
+    /// changing their own state when the inventory could not be charged.
+    /// </summary>
+    public bool RemoveItem(ItemData item, int amount)
     {
-        if (!ValidateItem(item, amount)) return;
+        if (!ValidateItem(item, amount)) return false;
 
         if (!HasItem(item, amount))
         {
             Debug.LogWarning($"Not enough {item.itemName} to remove.");
-            return;
+            return false;
         }
 
         for (int i = _inventory.Count - 1; i >= 0; i--)
@@ -48,6 +54,8 @@ public class InventoryManager : MonoBehaviour
 
         // Clean up dead slots with zero amount to prevent accumulation
         _inventory.RemoveAll(slot => slot.Amount <= 0);
+        InventoryChanged?.Invoke();
+        return true;
     }
 
     public void AddItem(ItemData item, int amount)
@@ -64,6 +72,7 @@ public class InventoryManager : MonoBehaviour
                     if (amount <= spaceLeft)
                     {
                         slot.Amount += amount;
+                        InventoryChanged?.Invoke();
                         return;
                     }
                     else
@@ -81,34 +90,8 @@ public class InventoryManager : MonoBehaviour
             _inventory.Add(new InventorySlot(item, amountToAdd));
             amount -= amountToAdd;
         }
-    }
 
-    // Track items that are committed to beaker slots (not yet crafted). They have already
-    // been removed from _inventory, so this dictionary is only used to restore on cancel.
-    private readonly Dictionary<ItemData, int> _committedItems = new();
-
-    /// <summary>
-    /// Track that an item has been placed into a beaker slot (counted toward crafting).
-    /// The caller must remove the item from inventory before committing it.
-    /// </summary>
-    public void CommitItem(ItemData item, int amount)
-    {
-        if (!ValidateItem(item, amount)) return;
-        _committedItems[item] = _committedItems.GetValueOrDefault(item, 0) + amount;
-    }
-
-    /// <summary>
-    /// Release committed items back to active inventory availability (undo tracking).
-    /// </summary>
-    public void ReleaseItem(ItemData item, int amount)
-    {
-        if (!ValidateItem(item, amount)) return;
-        if (_committedItems.TryGetValue(item, out var current))
-        {
-            _committedItems[item] = Mathf.Max(0, current - amount);
-            if (_committedItems[item] <= 0)
-                _committedItems.Remove(item);
-        }
+        InventoryChanged?.Invoke();
     }
 
     /// <summary>Returns early when item is null or amount is non-positive.</summary>
@@ -124,11 +107,6 @@ public class InventoryManager : MonoBehaviour
             if (slot.Item == item) totalOwned += slot.Amount;
         }
         return totalOwned >= amount;
-    }
-
-    public void ClearCommittedItems()
-    {
-        _committedItems.Clear();
     }
 
     public IReadOnlyList<InventorySlot> GetInventory()

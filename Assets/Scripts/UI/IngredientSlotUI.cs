@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,13 +10,8 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI amountText;
 
-    [Header("Beaker Visual")]
-    [SerializeField] private Image beakerImage;
-    [SerializeField] private Sprite emptyBeakerSprite;
-    [SerializeField] private Sprite[] level1Frames;
-    [SerializeField] private Sprite[] level2Frames;
-    [SerializeField] private Sprite[] level3Frames;
-    [SerializeField] private float beakerFrameRate = 10f;
+    [Header("Progress Feedback")]
+    [SerializeField] private Color filledTint = new(0.65f, 1f, 0.72f, 1f);
 
     [Header("Feedback Hooks")]
     public UnityEvent onAccepted;
@@ -29,7 +23,7 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     public bool IsFull => FilledAmount >= RequiredAmount;
 
     private CraftingBeakerController controller;
-    private Coroutine beakerAnimation;
+    private Color iconBaseColor = Color.white;
 
     public void Setup(Ingredient ingredient, CraftingBeakerController owningController)
     {
@@ -39,10 +33,12 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
         FilledAmount = 0;
 
         if (iconImage != null)
+        {
             iconImage.sprite = RequiredItem != null ? RequiredItem.itemIcon : null;
+            iconBaseColor = iconImage.color;
+        }
 
         RefreshDisplay();
-        PlayBeakerLevel(0);
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -61,19 +57,14 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
             return;
         }
 
-        controller.RequestFill(this, dragged.Amount);
+        if (!controller.RequestFill(this, dragged.Amount))
+            onRejected?.Invoke();
     }
 
     public void AddFilled(int amount)
     {
         FilledAmount = Mathf.Min(RequiredAmount, FilledAmount + amount);
         RefreshDisplay();
-
-        // Update individual slot progress visual (use floor to show 1st fill as level 1)
-        int level = RequiredAmount > 0
-            ? Mathf.FloorToInt((float)FilledAmount / RequiredAmount * MaxBeakerLevels)
-            : 0;
-        PlayBeakerLevel(level);
 
         onAccepted?.Invoke();
     }
@@ -82,67 +73,16 @@ public class IngredientSlotUI : MonoBehaviour, IDropHandler
     {
         FilledAmount = 0;
         RefreshDisplay();
-        PlayBeakerLevel(0);
     }
 
     private void RefreshDisplay()
     {
         if (amountText != null)
             amountText.text = $"{FilledAmount}/{RequiredAmount}";
-    }
-
-    [SerializeField] private int maxBeakerLevels = 3;
-
-    /// <summary>Returns the configured number of beaker fill levels for display.</summary>
-    public int MaxBeakerLevels => maxBeakerLevels;
-
-    private void PlayBeakerLevel(int level)
-    {
-        if (beakerImage == null) return;
-
-        StopBeakerAnimation();
-
-        Sprite[] frames;
-        if (level <= 0) frames = null;
-        else if (level == 1) frames = level1Frames;
-        else if (level == 2) frames = level2Frames;
-        else if (maxBeakerLevels >= 3 && level == 3) frames = level3Frames;
-        else frames = null; // beyond configured levels — show empty
-
-        if (frames == null || frames.Length == 0)
+        if (iconImage != null)
         {
-            beakerImage.sprite = emptyBeakerSprite;
-            return;
-        }
-
-        beakerAnimation = StartCoroutine(LoopFrames(frames));
-    }
-
-    private IEnumerator LoopFrames(Sprite[] frames)
-    {
-        float delay = 1f / Mathf.Max(1f, beakerFrameRate);
-        int i = 0;
-
-        while (beakerImage != null && gameObject.activeInHierarchy)
-        {
-            beakerImage.sprite = frames[i];
-            i = (i + 1) % frames.Length;
-            yield return new WaitForSeconds(delay);
-        }
-    }
-
-    private void OnDisable()
-    {
-        StopBeakerAnimation();
-    }
-
-    /// <summary>Stop the beaker frame animation coroutine (nulls reference).</summary>
-    private void StopBeakerAnimation()
-    {
-        if (beakerAnimation != null)
-        {
-            StopCoroutine(beakerAnimation);
-            beakerAnimation = null;
+            float progress = RequiredAmount > 0 ? (float)FilledAmount / RequiredAmount : 0f;
+            iconImage.color = Color.Lerp(iconBaseColor, filledTint, progress);
         }
     }
 }
