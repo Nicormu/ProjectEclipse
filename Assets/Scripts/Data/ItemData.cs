@@ -13,6 +13,10 @@ public class ItemData : ScriptableObject
     [TextArea]
     public string description;
 
+    [Header("Design")]
+    [Tooltip("Marcar en el item Astromyces (u otro ingrediente central obligatorio).")]
+    public bool isCoreIngredient;
+
     [Header("Inventory")]
     public bool stackable = true;
 

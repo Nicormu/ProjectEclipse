@@ -22,7 +22,15 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private bool isDragging = false;
 
     /// <summary>Returns true when this slot can initiate a drag (has an item, valid canvas, and crafting UI is open).</summary>
-    private bool CanStartDrag => Item != null && rootCanvas != null && _craftingOpen;
+    private bool CanStartDrag
+{
+    get
+    {
+        bool result = Item != null && rootCanvas != null && _craftingOpen;
+        Debug.Log($"CanStartDrag: {result} (Item={Item}, rootCanvas={rootCanvas}, craftingOpen={_craftingOpen})");
+        return result;
+    }
+}
 
     private void OnEnable()
     {
@@ -72,6 +80,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        Debug.Log("OnBeginDrag called");
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
         if (!isDragging && CanStartDrag)
@@ -88,6 +97,9 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // The source must stop receiving raycasts immediately so the target can
         // receive the drop even during a short, fast drag.
         canvasGroup.blocksRaycasts = false;
+
+        Debug.Log($"BeginDragInternal: Item={Item}, itemIcon={Item?.itemIcon}, rootCanvas={rootCanvas}");
+
 
         // Always use Item.itemIcon for the ghost — independent of whether iconImage is visible/enabled
         if (Item != null && Item.itemIcon != null)
@@ -148,18 +160,17 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (dragIcon == null || rootCanvas == null) return;
 
         Vector2 localPoint;
-        Camera eventCamera = rootCanvas.worldCamera;
+        Camera eventCamera = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : rootCanvas.worldCamera;
         Vector2 screenPos;
 
         if (eventData != null)
         {
-            eventCamera = eventData.pressEventCamera ?? eventCamera;
+            if (rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+                eventCamera = eventData.pressEventCamera ?? eventCamera;
             screenPos = eventData.position;
         }
         else
         {
-            // No PointerEventData available (e.g. called from StartDrag()).
-            // Falls back to the mouse position directly — not touch-aware.
             screenPos = Input.mousePosition;
         }
 

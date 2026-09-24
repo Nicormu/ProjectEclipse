@@ -24,14 +24,19 @@ public class RecipeData : ScriptableObject
             Debug.LogWarning($"Recipe '{name}' has no result item assigned.", this);
 
         // Check for duplicate ingredients (same item referenced twice)
-        if (ingredients != null)
+        if (ingredients != null && ingredients.Length > 0)
         {
-            var seen = new System.Collections.Generic.HashSet<ItemData>();
+            bool hasCoreIngredient = false;
             foreach (var ing in ingredients)
             {
-                if (!seen.Add(ing.item))
-                    Debug.LogWarning($"Recipe '{name}' has a duplicate ingredient '{ing?.item?.itemName ?? "null"}'.", this);
+                if (ing.item != null && ing.item.isCoreIngredient)
+                {
+                    hasCoreIngredient = true;
+                    break;
+                }
             }
+            if (!hasCoreIngredient)
+                Debug.LogWarning($"Recipe '{name}' no incluye un ingrediente central (Astromyces).", this);
         }
     }
 }
