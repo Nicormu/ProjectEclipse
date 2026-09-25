@@ -4,67 +4,87 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class BeakerFillVisual : MonoBehaviour
 {
-    [Header("Fill Frames (index 0 = empty, last index = full)")]
-    [SerializeField] private Sprite[] fillFrames;
+    [System.Serializable]
+    public class FillLevel
+    {
+        public Sprite[] frames;
+    }
+
+    [Header("Fill Levels (index 0 = empty, last index = full)")]
+    [SerializeField] private FillLevel[] levels;
+
+    [Header("Ready State")]
+    [Tooltip("Frames shown when the beaker is full and the recipe can be crafted.")]
+    [SerializeField] private Sprite[] readyFrames;
 
     [Header("Animation")]
-    [Tooltip("Fill units per second the displayed sprite catches up to the target (1 = empty-to-full in 1 second).")]
+    [Tooltip("Fill units per second the displayed level catches up to the target (1 = empty-to-full in 1 second).")]
     [SerializeField] private float fillSpeed = 2f;
+    [Tooltip("Frames per second of the loop inside each level.")]
+    [SerializeField] private float framesPerSecond = 8f;
 
     private Image beakerImage;
     private float targetFill;
     private float displayedFill;
+    private bool isReady;
 
     private void Awake()
     {
         beakerImage = GetComponent<Image>();
-        if (fillFrames == null || fillFrames.Length == 0)
+        if (levels == null || levels.Length == 0 || levels[0].frames == null || levels[0].frames.Length == 0)
         {
-            Debug.LogError("BeakerFillVisual: fillFrames array is not assigned. No sprites will render.", this);
+            Debug.LogError("BeakerFillVisual: levels[0] (empty beaker) has no frames assigned.", this);
             enabled = false;
             return;
         }
-        if (fillFrames[0] == null)
-        {
-            Debug.LogError("BeakerFillVisual: fillFrames[0] (empty beaker sprite) is not assigned.", this);
-            enabled = false;
-            return;
-        }
-        beakerImage.sprite = fillFrames[0];
+        beakerImage.sprite = levels[0].frames[0];
         displayedFill = 0f;
         targetFill = 0f;
     }
 
     private void Update()
     {
-        if (Mathf.Approximately(displayedFill, targetFill)) return;
-
-        displayedFill = Mathf.MoveTowards(displayedFill, targetFill, fillSpeed * Time.deltaTime);
-        ApplyFrame(displayedFill);
+        ApplyFrame(targetFill);
     }
 
     /// <param name="normalizedFill">0 = empty, 1 = full.</param>
-    /// <param name="instant">Skip the animation and snap straight to this fill level.</param>
     public void SetFill(float normalizedFill, bool instant = false)
     {
         targetFill = Mathf.Clamp01(normalizedFill);
+        ApplyFrame(targetFill);
+    }
 
-        if (instant)
-        {
-            displayedFill = targetFill;
-            ApplyFrame(displayedFill);
-        }
+    public void SetReady(bool ready)
+    {
+        isReady = ready;
+    }
+
+    private int GetLevelIndex(float t)
+    {
+        int last = levels.Length - 1;
+
+        if (t <= 0f) return 0;
+        if (t >= 0.999f) return last;
+        if (last < 2) return 0; // only empty and full levels exist
+
+        int middle = last - 1; // number of intermediate levels
+        return Mathf.Clamp(Mathf.CeilToInt(t * middle - 0.0001f), 1, middle);
     }
 
     private void ApplyFrame(float t)
     {
-        if (fillFrames == null || fillFrames.Length == 0 || beakerImage == null) return;
+        if (levels == null || levels.Length == 0 || beakerImage == null) return;
 
-        int index = Mathf.RoundToInt(t * (fillFrames.Length - 1));
-        index = Mathf.Clamp(index, 0, fillFrames.Length - 1);
-        
-        // Prevent unnecessary sprite assignments to reduce GC overhead
-        if (beakerImage.sprite != fillFrames[index])
-            beakerImage.sprite = fillFrames[index];
+        int level = GetLevelIndex(t);
+        Sprite[] frames = levels[level].frames;
+
+        if (isReady && readyFrames != null && readyFrames.Length > 0 && Mathf.Approximately(t, 1f))
+            frames = readyFrames;
+
+        if (frames == null || frames.Length == 0) return;
+
+        int frame = (int)(Time.time * framesPerSecond) % frames.Length;
+        if (beakerImage.sprite != frames[frame])
+            beakerImage.sprite = frames[frame];
     }
 }

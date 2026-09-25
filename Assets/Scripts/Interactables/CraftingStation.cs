@@ -113,6 +113,7 @@ public class CraftingStation : PanelBase, InteractableUI
     public void SelectRecipe(RecipeData recipe)
     {
         if (recipe == null || beakerController == null) return;
+        beakerController.CancelAndRestore();
         beakerController.LoadRecipe(recipe);
     }
 

@@ -47,13 +47,21 @@ public class InventoryManager : MonoBehaviour
                 else
                 {
                     amount -= _inventory[i].Amount;
-                    _inventory[i].Amount = 0; // Will be cleaned up below
+                    _inventory[i].Amount = 0;
                 }
             }
         }
 
-        // Clean up dead slots with zero amount to prevent accumulation
-        _inventory.RemoveAll(slot => slot.Amount <= 0);
+        // Keep one slot per item at zero; only remove empty duplicates
+        for (int i = _inventory.Count - 1; i >= 0; i--)
+        {
+            var slot = _inventory[i];
+            if (slot.Amount > 0) continue;
+
+            if (_inventory.Exists(s => s != slot && s.Item == slot.Item))
+                _inventory.RemoveAt(i);
+        }
+
         InventoryChanged?.Invoke();
         return true;
     }
@@ -81,6 +89,15 @@ public class InventoryManager : MonoBehaviour
                         amount -= spaceLeft;
                     }
                 }
+            }
+        }
+        else
+        {
+            var empty = _inventory.Find(s => s.Item == item && s.Amount == 0);
+            if (empty != null)
+            {
+                empty.Amount = 1;
+                amount--;
             }
         }
 

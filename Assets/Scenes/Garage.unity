@@ -512,7 +512,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -26.269, y: 0}
-  m_SizeDelta: {x: 650, y: 770}
+  m_SizeDelta: {x: 650, y: 669.2745}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &228212596
 MonoBehaviour:
@@ -741,41 +741,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventoryTabContent
   inventoryManager: {fileID: 2010018671}
   slotPrefab: {fileID: 4696583379573642049, guid: effbd1755def613c1ae3212f5c44d5bf, type: 3}
---- !u!1 &377992361
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 377992362}
-  m_Layer: 3
-  m_Name: Slots
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &377992362
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 377992361}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 871639210}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.79919934, y: 0.5}
-  m_AnchorMax: {x: 0.79919934, y: 0.5}
-  m_AnchoredPosition: {x: -10.018921, y: 11.4502}
-  m_SizeDelta: {x: 308.9645, y: 406.2904}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &395512771
 GameObject:
   m_ObjectHideFlags: 0
@@ -865,7 +830,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6, y: 1.2, z: 1}
+  m_LocalScale: {x: 0.8, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1813743427}
@@ -1039,8 +1004,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: InventoryDisplay, Assembly-CSharp
+      - m_Target: {fileID: 967247157}
+        m_TargetAssemblyTypeName: NotebookDisplay, Assembly-CSharp
         m_MethodName: NextPage
         m_Mode: 1
         m_Arguments:
@@ -1635,8 +1600,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: InventoryDisplay, Assembly-CSharp
+      - m_Target: {fileID: 967247157}
+        m_TargetAssemblyTypeName: NotebookDisplay, Assembly-CSharp
         m_MethodName: PreviousPage
         m_Mode: 1
         m_Arguments:
@@ -1721,8 +1686,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 362, y: -300}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 450, y: -350}
+  m_SizeDelta: {x: 400, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &679510764
 MonoBehaviour:
@@ -2015,7 +1980,6 @@ RectTransform:
   m_Children:
   - {fileID: 679510763}
   - {fileID: 1061020985}
-  - {fileID: 377992362}
   - {fileID: 1432022149}
   m_Father: {fileID: 790777078}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2038,7 +2002,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2148,7 +2112,7 @@ MonoBehaviour:
     contentProvider: {fileID: 0}
   pageTitleText: {fileID: 1782216892}
   contentPanel: {fileID: 228212595}
-  itemsPerPage: 6
+  itemsPerPage: 3
   pageNumberText: {fileID: 1285617343}
   nextButton: {fileID: 420916957}
   prevButton: {fileID: 637096450}
@@ -2495,6 +2459,7 @@ GameObject:
   - component: {fileID: 1061020987}
   - component: {fileID: 1061020986}
   - component: {fileID: 1061020988}
+  - component: {fileID: 1061020989}
   m_Layer: 3
   m_Name: Beaker
   m_TagString: Untagged
@@ -2511,15 +2476,15 @@ RectTransform:
   m_GameObject: {fileID: 1061020984}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5.016313, y: 5.7060566, z: 5.0163136}
+  m_LocalScale: {x: 1, y: 1, z: 5.0163136}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 871639210}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 362, y: 36}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 450, y: 0}
+  m_SizeDelta: {x: 550, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1061020986
 MonoBehaviour:
@@ -2571,33 +2536,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38ff1bf1f84869db684d2f61fa6d2b27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BeakerFillVisual
-  fillFrames:
-  - {fileID: -8214379713626754130, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -6638933297006128613, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 2339717778741609443, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 5773128145867547834, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -4426690482287479592, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 5510507303794003392, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -6000491716580677915, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 8349970720263182826, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 5330149491992084986, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -4436886409636820060, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -9102448922929945148, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 3102312148876240943, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -6403070892720632034, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 1869017660251797057, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 8121093181827196842, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 3141965530998431083, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 2642136968281701136, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 3182886611960478157, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -6223185962485605825, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -3745107112386838319, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 4447035593182916001, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 6783941422347950672, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: -6427832472897292152, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 2448949394246379618, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  - {fileID: 4109489943358021968, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
-  fillSpeed: 2
+  levels:
+  - frames:
+    - {fileID: -8214379713626754130, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - frames:
+    - {fileID: -6638933297006128613, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 2339717778741609443, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 5773128145867547834, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: -4426690482287479592, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 5510507303794003392, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: -6000491716580677915, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 8349970720263182826, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 5330149491992084986, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - frames:
+    - {fileID: -4436886409636820060, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: -9102448922929945148, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: -9102448922929945148, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: -6403070892720632034, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 1869017660251797057, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 8121093181827196842, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 3141965530998431083, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 2642136968281701136, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  - frames:
+    - {fileID: 3182886611960478157, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: -6223185962485605825, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: -3745107112386838319, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 4447035593182916001, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 6783941422347950672, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: -6427832472897292152, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 2448949394246379618, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+    - {fileID: 4109489943358021968, guid: 0765b69708b8ee4399d0804fcc1e102b, type: 3}
+  readyFrames: []
+  fillSpeed: 0.5
+  framesPerSecond: 8
+--- !u!114 &1061020989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061020984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28a7839821a5a585d932a358f1c45d46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeakerDropZone
+  controller: {fileID: 1432022150}
 --- !u!1 &1185244363
 GameObject:
   m_ObjectHideFlags: 0
@@ -2633,8 +2617,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_AnchoredPosition: {x: 0, y: 30}
+  m_SizeDelta: {x: 12, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1185244365
 MonoBehaviour:
@@ -2683,8 +2667,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 8
+  m_fontSizeBase: 8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3198,8 +3182,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CraftingBeakerController
   craftingStation: {fileID: 790777083}
-  slotsParent: {fileID: 1061020985}
-  ingredientSlotPrefab: {fileID: 496097530911476209, guid: ac8b2f30e0a0f6f6da0475670a1479d4, type: 3}
   beakerVisual: {fileID: 1061020988}
   onRecipeReady:
     m_PersistentCalls:
@@ -3557,7 +3539,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.8}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1813743428

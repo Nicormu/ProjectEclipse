@@ -8,7 +8,7 @@ public class BeakerDropZone : MonoBehaviour, IDropHandler
     public void OnDrop(PointerEventData eventData)
     {
         InventorySlotUI dragged = eventData.pointerDrag != null
-            ? eventData.pointerDrag.GetComponent<InventorySlotUI>()
+            ? eventData.pointerDrag.GetComponentInParent<InventorySlotUI>()
             : null;
 
         if (dragged == null || dragged.Item == null) return;
