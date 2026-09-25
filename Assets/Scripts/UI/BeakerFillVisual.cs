@@ -23,10 +23,20 @@ public class BeakerFillVisual : MonoBehaviour
     [Tooltip("Frames per second of the loop inside each level.")]
     [SerializeField] private float framesPerSecond = 8f;
 
+    [Header("Cross-fade")]
+    [SerializeField] private Image fadeImage;
+    [SerializeField] private float fadeDuration = 0.25f;
+
+    private const int ReadyState = -1;
+
     private Image beakerImage;
     private float targetFill;
     private float displayedFill;
     private bool isReady;
+
+    private int currentState;
+    private float stateStartTime;
+    private float fadeStartTime = -1f;
 
     private void Awake()
     {
@@ -40,23 +50,30 @@ public class BeakerFillVisual : MonoBehaviour
         beakerImage.sprite = levels[0].frames[0];
         displayedFill = 0f;
         targetFill = 0f;
+
+        currentState = 0;
+        stateStartTime = Time.time;
+
+        if (fadeImage != null)
+            SetFadeAlpha(0f);
     }
 
     private void Update()
     {
-        ApplyFrame(targetFill);
+        ApplyFrame(targetFill, false);
     }
 
     /// <param name="normalizedFill">0 = empty, 1 = full.</param>
     public void SetFill(float normalizedFill, bool instant = false)
     {
         targetFill = Mathf.Clamp01(normalizedFill);
-        ApplyFrame(targetFill);
+        ApplyFrame(targetFill, instant);
     }
 
     public void SetReady(bool ready)
     {
         isReady = ready;
+        ApplyFrame(targetFill, false);
     }
 
     private int GetLevelIndex(float t)
@@ -71,20 +88,63 @@ public class BeakerFillVisual : MonoBehaviour
         return Mathf.Clamp(Mathf.CeilToInt(t * middle - 0.0001f), 1, middle);
     }
 
-    private void ApplyFrame(float t)
+    private void ApplyFrame(float t, bool instant)
     {
         if (levels == null || levels.Length == 0 || beakerImage == null) return;
 
         int level = GetLevelIndex(t);
-        Sprite[] frames = levels[level].frames;
+        bool showReady = isReady && readyFrames != null && readyFrames.Length > 0 && Mathf.Approximately(t, 1f);
+        int newState = showReady ? ReadyState : level;
 
-        if (isReady && readyFrames != null && readyFrames.Length > 0 && Mathf.Approximately(t, 1f))
-            frames = readyFrames;
+        if (newState != currentState)
+        {
+            if (!instant && fadeImage != null)
+            {
+                fadeImage.sprite = beakerImage.sprite;
+                SetFadeAlpha(1f);
+                fadeStartTime = Time.time;
+            }
 
+            currentState = newState;
+            stateStartTime = Time.time;
+        }
+
+        if (instant)
+        {
+            fadeStartTime = -1f;
+            SetFadeAlpha(0f);
+        }
+
+        Sprite[] frames = showReady ? readyFrames : levels[level].frames;
         if (frames == null || frames.Length == 0) return;
 
-        int frame = (int)(Time.time * framesPerSecond) % frames.Length;
+        int frame = (int)((Time.time - stateStartTime) * framesPerSecond) % frames.Length;
         if (beakerImage.sprite != frames[frame])
             beakerImage.sprite = frames[frame];
+
+        UpdateFade();
+    }
+
+    private void UpdateFade()
+    {
+        if (fadeImage == null || fadeStartTime < 0f) return;
+
+        float elapsed = Time.time - fadeStartTime;
+        if (elapsed >= fadeDuration)
+        {
+            SetFadeAlpha(0f);
+            fadeStartTime = -1f;
+            return;
+        }
+
+        SetFadeAlpha(1f - elapsed / fadeDuration);
+    }
+
+    private void SetFadeAlpha(float alpha)
+    {
+        if (fadeImage == null) return;
+        Color c = fadeImage.color;
+        c.a = alpha;
+        fadeImage.color = c;
     }
 }

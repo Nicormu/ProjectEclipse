@@ -36,6 +36,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private void OnEnable()
     {
+        _craftingOpen = CraftingStation.IsCraftingOpen;
         CraftingStation.onCraftingOpened.AddListener(OnCraftingOpened);
         CraftingStation.onCraftingClosed.AddListener(OnCraftingClosed);
     }
