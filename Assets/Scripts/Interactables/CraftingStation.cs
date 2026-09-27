@@ -76,7 +76,7 @@ public class CraftingStation : PanelBase, InteractableUI
 
         if (isOpen && !isAnimating && Input.GetKeyDown(closeKey))
         {
-            StartCoroutine(FadeOut());
+            SetOpen(false);
         }
     }
 
@@ -85,10 +85,17 @@ public class CraftingStation : PanelBase, InteractableUI
         if (isAnimating)
             return;
 
-        if (isOpen)
-            StartCoroutine(FadeOut());
-        else
-            StartCoroutine(FadeIn());
+        SetOpen(!isOpen);
+    }
+
+    protected override void SetOpen(bool shouldBeOpen)
+    {
+        if (isOpen == shouldBeOpen || isAnimating) return;
+
+        base.SetOpen(shouldBeOpen);
+        IsCraftingOpen = shouldBeOpen;
+
+        StartCoroutine(shouldBeOpen ? FadeIn() : FadeOut());
     }
 
     /// <summary>
@@ -118,12 +125,9 @@ public class CraftingStation : PanelBase, InteractableUI
     }
 
     private IEnumerator FadeIn()
-{
+    {
         isAnimating = true;
         justOpened = true;
-
-        base.SetOpen(true);
-        IsCraftingOpen = true;
 
         craftingCanvasGroup.gameObject.SetActive(true);
 
@@ -133,7 +137,6 @@ public class CraftingStation : PanelBase, InteractableUI
         }
 
         onCraftingOpened?.Invoke();
-
 
         if (beakerController != null)
         {
@@ -168,8 +171,6 @@ public class CraftingStation : PanelBase, InteractableUI
     {
         isAnimating = true;
 
-        base.SetOpen(false);
-        IsCraftingOpen = false;
         onCraftingClosed?.Invoke();
 
         craftingCanvasGroup.interactable = false;

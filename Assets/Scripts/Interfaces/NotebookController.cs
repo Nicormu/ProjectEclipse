@@ -74,6 +74,8 @@ public class NotebookController : PanelBase
 
     private void Update()
     {
+        if (CraftingStation.IsCraftingOpen) return;
+
         if (Input.GetKeyDown(toggleKey))
         {
             SetOpen(!isOpen);
