@@ -19,6 +19,10 @@ public class ShopPanel : PanelBase
     [SerializeField] private ShopSlotUI slotPrefab;
     [SerializeField] private TextMeshProUGUI moneyText;
 
+    [Header("Mejora de mesa")]
+    [SerializeField] private AstromycesTable astromycesTable;
+    [SerializeField] private TextMeshProUGUI upgradeLabel;
+
     [Header("Botones de categoría (orden: básicos, especializados, volátiles)")]
     [SerializeField] private List<Button> categoryButtons = new();
 
@@ -78,6 +82,7 @@ public class ShopPanel : PanelBase
         {
             SubscribeToCurrency();
             ShowCategory(0);
+            RefreshUpgradeLabel();
         }
         else
         {
@@ -112,6 +117,15 @@ public class ShopPanel : PanelBase
 
         foreach (var slot in _slots)
             slot.SetAffordable(money >= slot.Item.buyPrice);
+    }
+
+    public void RefreshUpgradeLabel()
+    {
+        if (upgradeLabel == null || astromycesTable == null) return;
+
+        upgradeLabel.text = astromycesTable.IsMaxLevel
+            ? "Mesa: nivel maximo"
+            : $"Mejorar mesa a nivel {astromycesTable.Level + 1} - ${astromycesTable.NextUpgradeCost}";
     }
 
     private List<ItemData> GetCategory(int index)

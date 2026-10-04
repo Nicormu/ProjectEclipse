@@ -14,6 +14,7 @@ public class ShopManager : MonoBehaviour
     }
 
     [SerializeField] private List<WorldUnlock> worldUnlocks = new();
+    [SerializeField] private AstromycesTable astromycesTable;
 
     private void Start()
     {
@@ -70,8 +71,21 @@ public class ShopManager : MonoBehaviour
         return true;
     }
 
+    public bool TryPurchaseTableUpgrade()
+    {
+        if (astromycesTable == null)
+        {
+            Debug.LogWarning("TryPurchaseTableUpgrade: no hay mesa de Astromyces asignada.");
+            return false;
+        }
+
+        return astromycesTable.TryUpgrade();
+    }
+
     // Wrappers void de un solo parámetro para poder engancharlos en el OnClick de un Button.
     public void PurchaseUnlock(int index) => TryPurchaseUnlock(index);
 
     public void PurchaseItem(ItemData item) => TryPurchaseItem(item);
+
+    public void PurchaseTableUpgrade() => TryPurchaseTableUpgrade();
 }
