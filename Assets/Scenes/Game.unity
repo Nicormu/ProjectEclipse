@@ -3944,8 +3944,8 @@ MonoBehaviour:
     prefab: {fileID: 5038159861856405407, guid: a06a37b8450d557cf9db2d6b32cad9fa, type: 3}
     spawnPoint: {fileID: 242779374}
     price: 100
-    isPurchased: 1
-  astromycesTable: {fileID: 0}
+    isPurchased: 0
+  astromycesTable: {fileID: 1274233659}
 --- !u!4 &1050106678
 Transform:
   m_ObjectHideFlags: 0

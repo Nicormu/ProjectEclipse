@@ -1,7 +1,5 @@
 # Project Eclipse
 
-**Language: English** | [Español](#project-eclipse-español)
-
 A 2D game made in Unity where you manage a small cultivation and production business centered around **Astromyces**, a highly reactive alien fungus.
 
 ## Story
