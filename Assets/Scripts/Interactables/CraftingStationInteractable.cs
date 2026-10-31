@@ -3,6 +3,8 @@ using UnityEngine;
 public class CraftingStationInteractable : MonoBehaviour, InteractableUI
 {
     [SerializeField] private CraftingStation craftingStation;
+    [SerializeField] private string prompt = "Use crafting station";
+    public string InteractionPrompt => prompt;
 
     private void Awake()
     {

@@ -9,6 +9,7 @@ public class RecipeSlotUI : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TextMeshProUGUI recipeFormulaText; // Single text element for the whole line
 
     [Header("Formatting")]
+    [SerializeField] private string startFormula = " - ";
     [SerializeField] private string ingredientSeparator = " + ";
     [SerializeField] private string resultSeparator = " -> ";
 
@@ -32,6 +33,8 @@ public class RecipeSlotUI : MonoBehaviour, IPointerClickHandler
         }
 
         StringBuilder formula = new();
+
+        formula.Append(startFormula);
 
         for (int i = 0; i < recipe.ingredients.Length; i++)
         {

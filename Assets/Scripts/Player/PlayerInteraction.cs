@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class PlayerInteraction : MonoBehaviour
     [Header("Player UI")]
     [Tooltip("Drag the 'E' Canvas completely here")]
     [SerializeField] private CanvasGroup interactPromptGroup;
+    [Tooltip("Texto que describe la acción (Recoger cultivo, Dormir...)")]
+    [SerializeField] private TextMeshProUGUI promptText;
     [Tooltip("How fast the prompt fades in and out")]
     [SerializeField] private float fadeSpeed = 5f;
 
@@ -132,6 +135,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private void UpdateUI()
     {
+        if (promptText != null && currentInteractable != null)
+        {
+            promptText.text = currentInteractable.InteractionPrompt;
+        }
+
         if (interactPromptGroup != null)
         {
             float targetAlpha = currentInteractable != null ? 1f : 0f;
@@ -141,6 +149,9 @@ public class PlayerInteraction : MonoBehaviour
                 targetAlpha,
                 Time.deltaTime * fadeSpeed
             );
+
+            if (promptText != null)
+                promptText.alpha = interactPromptGroup.alpha;
         }
     }
 

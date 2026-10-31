@@ -4,6 +4,9 @@ public class Bed : MonoBehaviour, InteractableUI
 {
     [SerializeField] private SleepConfirmPanel confirmPanel;
 
+    [SerializeField] private string prompt = "Sleep";
+    public string InteractionPrompt => prompt;
+
     private void Awake()
     {
         if (confirmPanel == null)

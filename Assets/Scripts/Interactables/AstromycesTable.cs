@@ -17,6 +17,10 @@ public class AstromycesTable : MonoBehaviour, InteractableUI
     [Tooltip("El nivel 0 es el inicial. Cada nivel siguiente es una mejora.")]
     [SerializeField] private TableLevel[] levels = new TableLevel[1];
 
+    [SerializeField] private string promptWithStock = "Harvest Astromyces";
+    [SerializeField] private string promptEmpty = "No Astromyces available";
+    public string InteractionPrompt => stored > 0 ? promptWithStock : promptEmpty;
+
     private int levelIndex;
     private int stored;
     private DayManager subscribedDays;

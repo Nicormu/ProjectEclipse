@@ -29,6 +29,6 @@ public class DayClockUI : MonoBehaviour
     private void Refresh()
     {
         if (clockText == null) return;
-        clockText.text = $"Dia {days.Day}  {days.Hour:00}:{days.Minute:00}";
+        clockText.text = $"Day {days.Day}  {days.Hour:00}:{days.Minute:00}";
     }
 }

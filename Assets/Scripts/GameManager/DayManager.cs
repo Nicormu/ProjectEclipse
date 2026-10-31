@@ -13,6 +13,9 @@ public class DayManager : MonoBehaviour
     [Tooltip("Minutos del juego que pasan por cada minuto real.")]
     [SerializeField] private float inGameMinutesPerRealMinute = 20f;
 
+    private const string DayKey = "Day";
+    private const string MinutesKey = "Minutes";
+
     private float _minutes;
     private int _lastWholeMinute;
 
@@ -31,7 +34,8 @@ public class DayManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        _minutes = startHour * 60f;
+        Day = PlayerPrefs.GetInt(DayKey, 1);
+        _minutes = PlayerPrefs.GetFloat(MinutesKey, startHour * 60f);
         _lastWholeMinute = (int)_minutes;
     }
 
@@ -57,5 +61,23 @@ public class DayManager : MonoBehaviour
 
         NewDayStarted?.Invoke(Day);
         TimeChanged?.Invoke();
+
+        SaveTime();
+    }
+
+    private void SaveTime()
+    {
+        PlayerPrefs.SetInt(DayKey, Day);
+        PlayerPrefs.SetFloat(MinutesKey, _minutes);
+        PlayerPrefs.Save();
+    }
+
+    private void OnApplicationQuit() => SaveTime();
+
+    [ContextMenu("Borrar guardado (test)")]
+    private void ClearSave()
+    {
+        PlayerPrefs.DeleteKey(DayKey);
+        PlayerPrefs.DeleteKey(MinutesKey);
     }
 }

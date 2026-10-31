@@ -39,10 +39,6 @@ Determined to prove the university wrong, he begins cultivating the fungus, prod
 
 ![Crafting System](Screenshots/02.png)
 
-**Reagent Shop**
-
-![Reagent Shop](Screenshots/03.png)
-
 ## How to Run
 
 1. Clone this repository.
@@ -61,73 +57,5 @@ Determined to prove the university wrong, he begins cultivating the fungus, prod
 - `Scripts/Player`: Player movement and interaction.
 
 ## Author
-
-Nicolás
-
----
-
-# Project Eclipse (Español)
-
-**Idioma: Español** | [English](#project-eclipse)
-
-Juego 2D hecho en Unity donde gestionas un pequeño negocio de cultivo y producción de **Astromyces**, un hongo alienígena de alta reactividad.
-
-## Historia
-
-Tras ser rechazado de la universidad, el protagonista pasa una noche de profunda tristeza. Esa misma noche, un meteorito cae en su patio trasero. Dentro descubre Astromyces, un hongo alienígena con una capacidad de reacción y reproducción extraordinarias.
-
-Decidido a demostrar que la universidad se equivocó, empieza a cultivarlo, producir mezclas y aceptar pedidos, construyendo poco a poco un negocio a su alrededor.
-
-## Características
-
-- **Cultivo:** Cultiva Astromyces en una mesa que se puede mejorar.
-- **Crafteo químico:** Crea mezclas arrastrando reactivos al vaso de precipitados.
-- **Cuaderno de investigación:** Gestiona el inventario y consulta las recetas descubiertas.
-- **Tienda de reactivos:** Compra ingredientes organizados por categorías.
-- **Ciclo de días:** Duerme para avanzar al siguiente día.
-- **Misiones y pedidos:** Sistema actualmente en desarrollo.
-
-## Controles
-
-| Acción | Tecla |
-|---|---|
-| Moverse | W, A, S, D / Flechas |
-| Interactuar | E |
-| Abrir/cerrar cuaderno | Tab |
-| Cerrar paneles | Esc |
-| Arrastrar reactivos al vaso | Clic izquierdo |
-
-## Capturas
-
-**Menú principal**
-
-![Menú principal](Screenshots/01.png)
-
-**Sistema de crafteo**
-
-![Sistema de crafteo](Screenshots/02.png)
-
-**Tienda de reactivos**
-
-![Tienda de reactivos](Screenshots/03.png)
-
-## Cómo ejecutarlo
-
-1. Clona el repositorio.
-2. Abre el proyecto con la versión correspondiente de Unity.
-3. Abre la escena ubicada en `Assets/Scenes/` y presiona **Play**.
-
-*Nota: Completa las instrucciones con la versión exacta de Unity y el nombre de la escena antes de publicar.*
-
-## Estructura de scripts
-
-- `Scripts/Data`: ScriptableObjects de objetos, recetas e ingredientes.
-- `Scripts/GameManager`: Gestión del inventario, dinero, recetas, días y tienda.
-- `Scripts/Interactables`: Objetos con los que el jugador puede interactuar.
-- `Scripts/Interfaces`: Paneles del cuaderno, tienda, crafteo y descanso.
-- `Scripts/UI`: Componentes visuales y utilidades de interfaz.
-- `Scripts/Player`: Movimiento e interacción del jugador.
-
-## Autor
 
 Nicolás
